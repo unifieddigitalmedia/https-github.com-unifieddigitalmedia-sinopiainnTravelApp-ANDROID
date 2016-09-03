@@ -67,7 +67,7 @@ public class Fragment_Amenities extends Fragment {
 
         CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
 
-        collapsingToolbar.setTitle("Avilable Amenities");
+        collapsingToolbar.setTitle("Available Amenities");
 
         collapsingToolbar.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar);
 
