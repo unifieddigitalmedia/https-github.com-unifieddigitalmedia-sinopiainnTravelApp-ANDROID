@@ -1,0 +1,181 @@
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    card_view:cardUseCompatPadding="true">
+
+    <android.support.design.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/viewA"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:id="@+id/collapsing_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:contentScrim="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                >
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:id="@+id/image"
+                    app:layout_collapseMode="parallax"
+                    android:transitionName="mainPic"/>
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:layout_collapseMode="pin"/>
+
+            </android.support.design.widget.CollapsingToolbarLayout>
+
+        </android.support.design.widget.AppBarLayout>
+
+
+
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="KEY FACTS"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="28dp"
+                    android:text=" Capital:Kingston"
+                    android:paddingLeft="26dp"
+
+                    android:textSize="12sp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="28dp"
+                    android:text="Population:2,702,300"
+                    android:paddingLeft="26dp"
+
+                    android:textSize="12sp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="28dp"
+                    android:text="Currency:JMD:Jamaican Dollar"
+                    android:paddingLeft="26dp"
+                    android:textSize="12sp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="28dp"
+                    android:text="Language:English"
+                    android:paddingLeft="26dp"
+                    android:layout_marginBottom="16dp"
+                    android:textSize="12sp"/>
+
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="WHEN TO GO"
+                    android:paddingLeft="16dp"
+                    android:paddingBottom="16dp"
+                    android:textSize="16sp"/>
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:ems="10"
+                    android:id="@+id/editText"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:text="Jamaica’s middle-of-the-Caribbean location means it enjoys balmy temperatures all year round. The summer months are the hottest, with temperatures topping 30 degrees. Winter is a bit cooler, but still toasty by UK standards – expect the mercury to hover in the mid to high 20s. This is the driest time to visit – most of the island’s rain falls in summer and autumn. Hurricane season is from June to November, with August and September being the peak months. Severe storms are pretty rare, though."
+
+                    />
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="HOW TO GET HERE"
+                    android:paddingTop="16dp"
+                    android:paddingLeft="16dp"
+                    android:paddingBottom="16dp"
+                    android:textSize="16sp"/>
+
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:ems="10"
+
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:text="Visitors flying into the country are well served by three modern international airports, and the island enjoys direct connectivity to most major US gateways. Jamaica averages 37 flights daily from the US, ranging from a low of 30 on Tuesdays to a high of 48 on Saturdays, and has four ports of call with 53 ships docking annually. Some of the world’s premier cruise lines such as Carnival, Princess Cruises and Royal Caribbean from North America, Aida Cruises from Germany and Sun Cruises from Britain visit Jamaica each year.
+
+"
+                    />
+
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="PASSPORTS AND VISAS"
+                    android:paddingTop="16dp"
+                    android:paddingLeft="16dp"
+                    android:paddingBottom="16dp"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:ems="10"
+
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:text="British citizens don’t need a visa to enter Jamaica, but must have a valid passport. For the most up-to-date passport and visa info, visit www.gov.uk/foreign-travel-advice/jamaica/entry-requirements
+For more information visit the Foreign Office website - www.fco.gov.uk/en/"
+                    />
+
+
+
+            </LinearLayout>
+
+        </android.support.v4.widget.NestedScrollView>
+
+
+    </android.support.design.widget.CoordinatorLayout>
+
+</android.support.v7.widget.CardView>
