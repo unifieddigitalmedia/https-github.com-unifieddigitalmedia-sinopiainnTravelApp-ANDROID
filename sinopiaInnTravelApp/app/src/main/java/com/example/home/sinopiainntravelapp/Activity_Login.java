@@ -3,11 +3,12 @@ package com.example.home.sinopiainntravelapp;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.loopj.android.http.AsyncHttpClient;
@@ -26,11 +27,16 @@ public class Activity_Login extends AppCompatActivity {
     ImageView backgrounImage;
     ScaleBitMaps bitmapClass ;
     public static final String PREFS_NAME = "checkinToken";
-
+    FrameLayout relativeLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_login);
+
+        relativeLayout = (FrameLayout) findViewById(R.id.frameLayout);
+
         token = (EditText) findViewById(R.id.amenities);
 
         confirm = (Button) findViewById(R.id.loginbutton);
@@ -87,10 +93,12 @@ public class Activity_Login extends AppCompatActivity {
                                     editor.putString("token", token.getText().toString());
                                     editor.putString("fname", booking.getString("fname"));
                                     editor.putString("lname", booking.getString("lname"));
+                                    editor.putString("fromdate", booking.getString("fromdate"));
+                                    editor.putString("todate", booking.getString("todate"));
+                                    editor.putString("reservationID", booking.getString("_id"));
                                     editor.commit();
 
                                     Intent intent = new Intent(getBaseContext(), Activity_CheckIn.class);
-
                                     startActivity(intent);
 
                                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -118,12 +126,17 @@ public class Activity_Login extends AppCompatActivity {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e)  {
-                        // Handle the failure and alert the user to retry
-                        Log.e("ERROR", e.toString());
+
+
+                        Snackbar snackbar = Snackbar
+                                .make(relativeLayout, "Checking Reservation Details", Snackbar.LENGTH_LONG);
+
+                        snackbar.show();
+
                     }
                     @Override
                     public void onRetry(int retryNo) {
-                        // called when request is retried
+
                     }
                 });
 

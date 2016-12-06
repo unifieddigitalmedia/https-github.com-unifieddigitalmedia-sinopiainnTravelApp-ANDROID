@@ -1,7 +1,5 @@
 package com.example.home.sinopiainntravelapp;
 
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -76,7 +74,6 @@ public class ArrayFilter {
 
             }
 
-Log.i("servicelist",servicelist.toString());
             return servicelist;
 
         }

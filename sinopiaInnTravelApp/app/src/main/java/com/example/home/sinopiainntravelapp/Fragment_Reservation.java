@@ -1,14 +1,16 @@
 package com.example.home.sinopiainntravelapp;
 
 
+import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -16,12 +18,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.loopj.android.http.AsyncHttpClient;
@@ -48,7 +49,6 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
     public static  int mDay;
 
     public static int DATE_DIALOG_ID = 1;
-
 
     public static int scrollX = 0;
 
@@ -80,14 +80,32 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
     TextInputLayout roomsError;
     TextInputLayout amenititesError;
     TextView errormessage ;
-
+    TextView dateerror;
     Bundle bundle;
 
+    ImageButton adultsbtn;
+    ImageButton childrenbtn;
+    ImageButton infantbtn;
+
+    ImageButton adultsbtnremove;
+    ImageButton childrenbtnremove;
+    ImageButton infantbtnremove;
+
+
+    TextView numofadult;
+
+    TextView numofchildren;
+
+    TextView numofinfants;
+
+    CardView relativeLayout;
+
     public Fragment_Reservation() {
-        // Required empty public constructor
+
     }
 
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -102,32 +120,27 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
 
         collapsingToolbar.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
 
-        Spinner spinner = (Spinner) rootView.findViewById(R.id.spinner);
 
-        spinner.setOnItemSelectedListener(this);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.number_of_guest, android.R.layout.simple_spinner_item);
+        relativeLayout = (CardView) rootView.findViewById(R.id.card_view);
 
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        bundle = new Bundle();
 
-        spinner.setAdapter(adapter);
+        fromDate = (EditText) rootView.findViewById(R.id.fromdate);
 
-         bundle = new Bundle();
+        fromDateError = (TextInputLayout) rootView.findViewById(R.id.fromDateError);
 
-         fromDate = (EditText) rootView.findViewById(R.id.fromdate);
+        toDateError = (TextInputLayout) rootView.findViewById(R.id.toDateError);
 
-         fromDateError = (TextInputLayout) rootView.findViewById(R.id.fromDateError);
+        roomsError = (TextInputLayout) rootView.findViewById(R.id.roomsError);
 
-         toDateError = (TextInputLayout) rootView.findViewById(R.id.toDateError);
+        amenititesError = (TextInputLayout) rootView.findViewById(R.id.amenititesError);
 
-         roomsError = (TextInputLayout) rootView.findViewById(R.id.roomsError);
+        errormessage = (TextView) rootView.findViewById(R.id.errormessage);
 
-         amenititesError = (TextInputLayout) rootView.findViewById(R.id.amenititesError);
+        dateerror = (TextView) rootView.findViewById(R.id.dateerror);
 
-         errormessage = (TextView) rootView.findViewById(R.id.errormessage);
-
-         fromDate.setOnClickListener(new View.OnClickListener() {
+        fromDate.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -139,7 +152,7 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
                 showdatedialog();
 
 
-             }
+            }
 
 
         });
@@ -168,6 +181,7 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
 
         rooms = (EditText) rootView.findViewById(R.id.rooms);
 
+
         rooms.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -178,24 +192,27 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
                 if (!toDate.getText().toString().matches("")) {
 
 
-                    String json = "[{\"_id\": \"57471cfa864730dd9d55d44d\",\"name\": \"Spring Bud\",\"description\": \"Double occupancy bedroom with ensuite bathroom\",\"occupancy\": \"2\",\"price\": \"165.00\",\"icon\": \"/images/parrot_thumb.png\",\"booking\": []},{\"_id\": \"57471cfa864730dd9d55d44e\",\"name\": \"Coquelicot\",\"description\": \"Quadruple occupancy bedroom with ensuite bathroom and lounge\",\"occupancy\": \"4\",\"price\": \"200.00\",\"icon\": \"/images/parrot_thumb.png\",\"booking\": []}]";
-
                     Fragment_Rooms new_fragment = new Fragment_Rooms();
 
+                    if(((Activity_Home) getActivity()).jsonRooms.length() > 0 ){
 
 
-                    bundle.putString("Rooms", ((Activity_Home) getActivity()).jsonRooms.toString());
+                        bundle.putString("Rooms", ((Activity_Home) getActivity()).jsonRooms.toString());
 
-                    new_fragment.setArguments(bundle);
+                        new_fragment.setArguments(bundle);
 
-                    ((Activity_Home) getActivity()).homePageFadeTransition(new_fragment);
+                        ((Activity_Home) getActivity()).homePageFadeTransition(new_fragment,"");
 
+
+                    }
 
                 }else{
 
 
 
-                    roomsError.setError("You need to choose your check in and check out dates ");
+                    dateerror.setText("You need to choose your check in and check out dates ");
+                    errormessage.setText("You need to choose your check in and check out dates ");
+                    errormessage.setTextColor(getResources().getColor(android.R.color.holo_red_light));
 
                 }
 
@@ -222,20 +239,24 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
                     Fragment_Amenities new_fragment = new Fragment_Amenities();
 
 
+                    if(((Activity_Home) getActivity()).jsonAmenities.length() > 0 ) {
 
-                    bundle.putString("Rooms",((Activity_Home) getActivity()).jsonAmenities.toString());
+                        bundle.putString("Rooms", ((Activity_Home) getActivity()).jsonAmenities.toString());
 
-                    new_fragment.setArguments(bundle);
+                        new_fragment.setArguments(bundle);
 
-                    ((Activity_Home) getActivity()).homePageFadeTransition(new_fragment);
+                        ((Activity_Home) getActivity()).homePageFadeTransition(new_fragment,"");
+
+                    }
 
 
                 }else{
 
 
 
-                    roomsError.setError("You need to choose your check in and check out dates ");
-
+                    dateerror.setText("You need to choose your check in and check out dates ");
+                    errormessage.setText("You need to choose your check in and check out dates ");
+                    errormessage.setTextColor(getResources().getColor(android.R.color.holo_red_light));
                 }
 
             }
@@ -255,7 +276,7 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
                                 actionId == EditorInfo.IME_ACTION_DONE ||
                                 event.getAction() == KeyEvent.ACTION_DOWN &&
                                         event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                            if (!event.isShiftPressed()) {
+                            if (!event.isShiftPressed() && !toDate.getText().toString().matches("")) {
 
                                 StringBuilder builder = new StringBuilder();
 
@@ -264,15 +285,18 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
 
                                 checkAvilabilty(WEB_SERVICE_URL);
 
-                                return true; // consume.
+                                return true;
+                            }else{
+
+
+
+                                roomsError.setError("You need to choose your check in and check out dates ");
+
                             }
                         }
-                        return false; // pass on to other listeners.
+                        return false;
                     }
                 });
-
-        /**/
-
 
 
         getTotal = (Button) rootView.findViewById(R.id.goToTotal);
@@ -301,7 +325,11 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
 
                     new_fragment.setArguments(bundle);
 
-                    ((Activity_Home) getActivity()).homePageFadeTransition(new_fragment);
+
+                    ((Activity_Home) getActivity()).numf_of_guest = ((Activity_Home) getActivity()).num_of_adults + ((Activity_Home) getActivity()).num_of_children +((Activity_Home) getActivity()).num_of_infants;
+
+
+                    ((Activity_Home) getActivity()).homePageFadeTransition(new_fragment,"");
 
 
 
@@ -330,20 +358,152 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
         scrollView = (NestedScrollView) rootView.findViewById(R.id.scrollView);
 
 
+        numofadult = (TextView) rootView.findViewById(R.id.numofadult);
 
-        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
+        numofchildren = (TextView) rootView.findViewById(R.id.numofchildren);
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        numofinfants = (TextView) rootView.findViewById(R.id.numofinfants);
+
+
+        adultsbtn = (ImageButton) rootView.findViewById(R.id.numberofadultsadd);
+
+
+        adultsbtn.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
 
+                if(((Activity_Home) getActivity()).num_of_adults != 10){
+
+
+                    ((Activity_Home) getActivity()).num_of_adults =   ((Activity_Home) getActivity()).num_of_adults + 1 ;
+
+                    ((Activity_Home) getActivity()).numf_of_guest  = ((Activity_Home) getActivity()).numf_of_guest+ 1;
+
+                    numofadult.setText(String.valueOf(((Activity_Home) getActivity()).num_of_adults));
+
+
+                }
 
 
             }
+
+
         });
 
 
-        fab.getDrawable().mutate().setTint(ContextCompat.getColor(getActivity(), android.R.color.white));
+
+        childrenbtn = (ImageButton) rootView.findViewById(R.id.numberofchildrenadd);
+
+        childrenbtn.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                if(((Activity_Home) getActivity()).num_of_children != 10) {
+
+                    ((Activity_Home) getActivity()).numf_of_guest  = ((Activity_Home) getActivity()).numf_of_guest+ 1;
+                    ((Activity_Home) getActivity()).num_of_children = ((Activity_Home) getActivity()).num_of_children + 1;
+
+                    numofchildren.setText(String.valueOf(((Activity_Home) getActivity()).num_of_children));
+
+                }
+            }
+
+
+        });
+
+
+        infantbtn = (ImageButton) rootView.findViewById(R.id.numberofinfantsadd);
+
+        infantbtn.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                if(((Activity_Home) getActivity()).num_of_infants != 10) {
+
+                    ((Activity_Home) getActivity()).numf_of_guest  = ((Activity_Home) getActivity()).numf_of_guest+ 1;
+
+                    ((Activity_Home) getActivity()).num_of_infants = ((Activity_Home) getActivity()).num_of_infants + 1;
+
+                    numofinfants.setText(String.valueOf(((Activity_Home) getActivity()).num_of_infants));
+
+                }
+            }
+
+
+        });
+
+
+
+        adultsbtnremove = (ImageButton) rootView.findViewById(R.id.numberofadultsremove);
+
+        adultsbtnremove.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                if(((Activity_Home) getActivity()).num_of_adults != 1) {
+
+                    ((Activity_Home) getActivity()).numf_of_guest  = ((Activity_Home) getActivity()).numf_of_guest -  1;
+                    ((Activity_Home) getActivity()).num_of_adults = ((Activity_Home) getActivity()).num_of_adults - 1;
+                    numofadult.setText(String.valueOf(((Activity_Home) getActivity()).num_of_adults));
+
+                }
+
+            }
+
+
+        });
+
+
+
+        childrenbtnremove = (ImageButton) rootView.findViewById(R.id.numberofchildrenremove);
+
+        childrenbtnremove.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                if(((Activity_Home) getActivity()).num_of_children != 0) {
+
+                    ((Activity_Home) getActivity()).numf_of_guest  = ((Activity_Home) getActivity()).numf_of_guest -  1;
+
+
+                    ((Activity_Home) getActivity()).num_of_children = ((Activity_Home) getActivity()).num_of_children - 1;
+
+                    numofchildren.setText(String.valueOf(((Activity_Home) getActivity()).num_of_children));
+
+                }
+            }
+
+
+        });
+
+
+
+        infantbtnremove = (ImageButton) rootView.findViewById(R.id.numberofinfantsremove);
+
+        infantbtnremove.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                if(((Activity_Home) getActivity()).num_of_infants != 0) {
+
+                    ((Activity_Home) getActivity()).numf_of_guest  = ((Activity_Home) getActivity()).numf_of_guest -  1;
+
+                    ((Activity_Home) getActivity()).num_of_infants = ((Activity_Home) getActivity()).num_of_infants - 1;
+
+                    numofinfants.setText(String.valueOf(((Activity_Home) getActivity()).num_of_infants));
+                }
+            }
+
+
+        });
+
+
 
 
         return rootView;
@@ -357,22 +517,14 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
 
     {
         super.onPause();
-        scrollX = scrollView.getScrollX();
-        scrollY = scrollView.getScrollY();
+
+
     }
 
     @Override
     public void onResume(){
 
         super.onResume();
-
-        scrollView.post(new Runnable() {
-            @Override
-            public void run() {
-                scrollView.scrollTo(scrollX, scrollY);
-            }
-        });
-
 
         TextSetter = new BuildString(getActivity());
 
@@ -393,8 +545,6 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
         int mMonth = c.get(Calendar.MONTH);
 
         int mDay = c.get(Calendar.DAY_OF_MONTH);
-
-        //((DatePickerDialog) dialog).updateDate(mYear, mMonth, mDay);
 
         new DatePickerDialog(getActivity(), mDateSetListener, mYear, mMonth, mDay).show();
 
@@ -460,8 +610,8 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
                                         DATE_DIALOG_ID = 2;
 
                                         showdatedialog();
-                                        fromDateError.setError(null);
-
+                                        dateerror.setText(null);
+                                        fromDate.setText(null);
                                     }
 
 
@@ -473,8 +623,8 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
 
                                 ((Activity_Home) getActivity()).fromdate = null;
 
-                                fromDateError.setError("Your check in date cannot be in the past.");
-
+                                dateerror.setText("Your check in date cannot be in the past.");
+                                fromDate.setText(null);
 
                             }
 
@@ -483,7 +633,7 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
 
 
                             fromDate.setText(ndate);
-                            fromDateError.setError(null);
+                            dateerror.setText(null);
                             toDate.setText("Select Date");
 
 
@@ -517,91 +667,110 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
                 } else {
 
 
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-
-                    ((Activity_Home) getActivity()).todate = cdate;
-
-                    Date dateObj = null;
-
-                    try {
-
-                        dateObj = sdf.parse(((Activity_Home) getActivity()).todate);
+                    if(fromDate.getText().toString().equals("")){
 
 
-                        Date fromdateObj = sdf.parse(((Activity_Home) getActivity()).fromdate);
+                        dateerror.setText("You need to choose a check in date.");
 
 
-                        String newdate = sdf.format(new Date());
-
-                        if(sdf.parse(newdate).equals(dateObj)  )
-
-                        {
-
-                            toDateError.setError("You cannot check out today.");
+                    }else{
 
 
-                        }
-
-                        else
-                        {
 
 
-                            if (new Date().after(dateObj) )
 
+
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+
+                        ((Activity_Home) getActivity()).todate = cdate;
+
+                        Date dateObj = null;
+
+                        try {
+
+                            dateObj = sdf.parse(((Activity_Home) getActivity()).todate);
+
+
+                            Date fromdateObj = sdf.parse(((Activity_Home) getActivity()).fromdate);
+
+
+                            String newdate = sdf.format(new Date());
+
+                            if(sdf.parse(newdate).equals(dateObj)  )
 
                             {
 
+                                dateerror.setText("You cannot check out today.");
+                                toDate.setText(null);
+
+                            }
+
+                            else
+                            {
 
 
-                                ((Activity_Home) getActivity()).todate = null;
+                                if (new Date().after(dateObj) )
 
-                                toDateError.setError("Your check out date cannot be in the past.");
-
-
-
-
-                            } else {
-
-
-                                if(fromdateObj.after(dateObj))
 
                                 {
+
+
 
                                     ((Activity_Home) getActivity()).todate = null;
 
+                                    dateerror.setText("Your check out date cannot be in the past.");
+                                    toDate.setText(null);
 
-                                    toDateError.setError("Your check out date cannot before your check in date.");
 
-                                }
-                                else
 
-                                {
+                                } else {
 
-                                    if(sdf.parse(((Activity_Home) getActivity()).fromdate).equals(dateObj) )
+
+                                    if(fromdateObj.after(dateObj))
 
                                     {
 
+                                        ((Activity_Home) getActivity()).todate = null;
 
-                                        toDateError.setError("Our minimum stay is one night.");
 
+                                        dateerror.setText("Your check out date cannot before your check in date.");
+                                        toDate.setText(null);
                                     }
                                     else
 
                                     {
 
+                                        if(sdf.parse(((Activity_Home) getActivity()).fromdate).equals(dateObj) )
 
-                                        toDate.setText(ndate);
+                                        {
 
-                                        toDateError.setError(null);
 
-                                        ((Activity_Home) getActivity()).setNumbOfDays(sdf.parse(((Activity_Home) getActivity()).fromdate), sdf.parse(((Activity_Home) getActivity()).todate));
+                                            dateerror.setText("Our minimum stay is one night.");
+                                            toDate.setText(null);
+                                        }
+                                        else
 
-                                        StringBuilder builder = new StringBuilder();
+                                        {
 
-                                       String WEB_SERVICE_URL = builder.append("http://www.sinopiainn.com/api/checkavailability/?fromdate=")
-.append(((Activity_Home) getActivity()).fromdate).append("&todate=").append(((Activity_Home) getActivity()).todate).append("&promo=").append(promo.getText().toString()).toString();
 
-checkAvilabilty(WEB_SERVICE_URL);
+                                            toDate.setText(ndate);
+
+                                            dateerror.setText(null);
+
+                                            ((Activity_Home) getActivity()).setNumbOfDays(sdf.parse(((Activity_Home) getActivity()).fromdate), sdf.parse(((Activity_Home) getActivity()).todate));
+
+                                            StringBuilder builder = new StringBuilder();
+
+                                            String WEB_SERVICE_URL = builder.append("http://www.sinopiainn.com/api/checkhotelavailability/?fromdate=").append(((Activity_Home) getActivity()).fromdate).append("&todate=").append(((Activity_Home) getActivity()).todate).append("&promo=").append(promo.getText().toString()).append("&nights=").append(((Activity_Home) getActivity()).num_of_days).toString();
+    Log.i("WEB_SERVICE_URL",WEB_SERVICE_URL);
+                                            checkAvilabilty(WEB_SERVICE_URL);
+
+
+
+
+                                        }
+
+
 
 
 
@@ -613,10 +782,8 @@ checkAvilabilty(WEB_SERVICE_URL);
 
 
 
+
                                 }
-
-
-
 
 
 
@@ -626,26 +793,19 @@ checkAvilabilty(WEB_SERVICE_URL);
 
 
 
+
+
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
                         }
 
 
-
-
-
-
-
-                    } catch (ParseException e) {
-                        e.printStackTrace();
                     }
 
 
 
-
-
                 }
-
-
-                //updateDisplay();
 
 
             }
@@ -657,9 +817,6 @@ checkAvilabilty(WEB_SERVICE_URL);
     private void checkAvilabilty(String WEB_SERVICE_URL) {
 
 
-
-        Log.i("WEB_SERVICE_URL",WEB_SERVICE_URL);
-
         AsyncHttpClient client = new AsyncHttpClient();
 
         client.setConnectTimeout(20000);
@@ -667,22 +824,31 @@ checkAvilabilty(WEB_SERVICE_URL);
 
             @Override
             public void onStart() {
-                // called before request is started
+
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
 
-                Log.i("json",json.toString());
+
                 AsyncHttpClient client = new AsyncHttpClient();
 
 
                 try {
 
-                    ((Activity_Home) getActivity()).jsonRooms = (JSONArray) json.get(0);
-                    ((Activity_Home) getActivity()).jsonAmenities = (JSONArray) json.get(2);
 
-                    ((Activity_Home) getActivity()).Jsonofferlist = (JSONArray) json.get(1);
+                    if(json.length() > 2 ){
+
+                        ((Activity_Home) getActivity()).jsonRooms = (JSONArray) json.get(0);
+                        ((Activity_Home) getActivity()).jsonAmenities = (JSONArray) json.get(2);
+                        ((Activity_Home) getActivity()).Jsonofferlist = (JSONArray) json.get(1);
+
+                    }else{
+
+                        ((Activity_Home) getActivity()).jsonRooms = (JSONArray) json.get(0);
+                        ((Activity_Home) getActivity()).jsonAmenities = (JSONArray) json.get(1);
+
+                    }
 
 
                 } catch (JSONException e) {
@@ -698,12 +864,18 @@ checkAvilabilty(WEB_SERVICE_URL);
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e)  {
-                // Handle the failure and alert the user to retry
-                Log.e("ERROR", e.toString());
+
+
+                Snackbar snackbar = Snackbar
+                        .make(relativeLayout, "Checking Availability", Snackbar.LENGTH_LONG);
+
+                snackbar.show();
+
+
             }
             @Override
             public void onRetry(int retryNo) {
-                // called when request is retried
+
             }
         });
 

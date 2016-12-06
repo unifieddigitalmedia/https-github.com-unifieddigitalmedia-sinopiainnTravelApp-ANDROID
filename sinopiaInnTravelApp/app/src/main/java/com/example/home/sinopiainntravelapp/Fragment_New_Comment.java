@@ -9,18 +9,27 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.TextView;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
+
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
+import cz.msebera.android.httpclient.Header;
 
 
 /**
@@ -33,11 +42,13 @@ public class Fragment_New_Comment extends Fragment {
 
     public Button submitComment;
 
-    public ImageView rating1,rating2,rating3,rating4,rating5 ;
+    public ImageButton rating1,rating2,rating3,rating4,rating5 ;
 
     public static int DATE_DIALOG_ID = 1;
 
-    public static  int mYear, mMonth, mDay;
+    public static  int mYear, mMonth, mDay,rating;
+
+    public static String fromdate;
 
     TextInputLayout fromDateError;
 
@@ -69,9 +80,13 @@ public class Fragment_New_Comment extends Fragment {
 
         collapsingToolbar.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
 
-        rating1 = (ImageView) rootView.findViewById(R.id.rating1);
+        rating = 0;
+
+        rating1 = (ImageButton) rootView.findViewById(R.id.rating1);
 
         rating1.setImageResource(icons[0]);
+
+        rating1.setColorFilter(Color.argb(999,153,153,51));
 
         rating1.setOnClickListener(new View.OnClickListener() {
 
@@ -79,9 +94,13 @@ public class Fragment_New_Comment extends Fragment {
             public void onClick(View v) {
 
 
+                rating1.setImageResource(icons[1]);
+                rating2.setImageResource(icons[0]);
+                rating3.setImageResource(icons[0]);
+                rating4.setImageResource(icons[0]);
+                rating5.setImageResource(icons[0]);
 
-
-
+                rating = 1;
 
             }
 
@@ -89,10 +108,10 @@ public class Fragment_New_Comment extends Fragment {
         });
 
 
-        rating2 = (ImageView) rootView.findViewById(R.id.rating2);
+        rating2 = (ImageButton) rootView.findViewById(R.id.rating2);
 
         rating2.setImageResource(icons[0]);
-
+        rating2.setColorFilter(Color.argb(999,153,153,51));
         rating2.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -100,9 +119,13 @@ public class Fragment_New_Comment extends Fragment {
 
 
 
+                rating1.setImageResource(icons[1]);
+                rating2.setImageResource(icons[1]);
+                rating3.setImageResource(icons[0]);
+                rating4.setImageResource(icons[0]);
+                rating5.setImageResource(icons[0]);
 
-
-
+                rating = 2;
             }
 
 
@@ -110,28 +133,32 @@ public class Fragment_New_Comment extends Fragment {
 
 
 
-        rating3 = (ImageView) rootView.findViewById(R.id.rating3);
+        rating3 = (ImageButton) rootView.findViewById(R.id.rating3);
 
         rating3.setImageResource(icons[0]);
-
+        rating3.setColorFilter(Color.argb(999,153,153,51));
         rating3.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
 
 
+                rating1.setImageResource(icons[1]);
+                rating2.setImageResource(icons[1]);
+                rating3.setImageResource(icons[1]);
+                rating4.setImageResource(icons[0]);
+                rating5.setImageResource(icons[0]);
 
-
-
+                rating = 3;
 
             }
 
 
         });
 
-        rating4 = (ImageView) rootView.findViewById(R.id.rating4);
+        rating4 = (ImageButton) rootView.findViewById(R.id.rating4);
         rating4.setImageResource(icons[0]);
-
+        rating4.setColorFilter(Color.argb(999,153,153,51));
         rating4.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -139,8 +166,13 @@ public class Fragment_New_Comment extends Fragment {
 
 
 
+                rating1.setImageResource(icons[1]);
+                rating2.setImageResource(icons[1]);
+                rating3.setImageResource(icons[1]);
+                rating4.setImageResource(icons[1]);
+                rating5.setImageResource(icons[0]);
 
-
+                rating = 4;
 
             }
 
@@ -148,19 +180,23 @@ public class Fragment_New_Comment extends Fragment {
         });
 
 
-        rating5 = (ImageView) rootView.findViewById(R.id.rating5);
+        rating5 = (ImageButton) rootView.findViewById(R.id.rating5);
 
         rating5.setImageResource(icons[0]);
-
+        rating5.setColorFilter(Color.argb(999,153,153,51));
         rating5.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
 
 
+                rating1.setImageResource(icons[1]);
+                rating2.setImageResource(icons[1]);
+                rating3.setImageResource(icons[1]);
+                rating4.setImageResource(icons[1]);
+                rating5.setImageResource(icons[1]);
 
-
-
+                rating = 5;
 
             }
 
@@ -202,53 +238,71 @@ public class Fragment_New_Comment extends Fragment {
             public void onClick(View v) {
 
 
-                Snackbar snackbar = Snackbar
-                        .make(blistlayout, "Your comments have been posted", Snackbar.LENGTH_LONG);
 
 
-                snackbar.setActionTextColor(Color.GREEN);
+                RequestParams params = new RequestParams();
 
 
-                View sbView = snackbar.getView();
-                TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-                textView.setTextColor(Color.WHITE);
-                snackbar.show();
 
-                /*
-                AsyncHttpClient client;
+                params.put("date", fromdate);
+                params.put("name",nameTextView.getText());
+                params.put("comment",commentTextView.getText());
+                params.put("rating",rating);
 
-                client = new AsyncHttpClient();
+
+
+                AsyncHttpClient client = new AsyncHttpClient();
 
                 client.setConnectTimeout(20000);
 
-                client.post("http://www.sinopiainn.com/api/review", new JsonHttpResponseHandler() {
+                client.post("http://www.sinopiainn.com/api/reviews/", new TextHttpResponseHandler() {
+
 
                     @Override
-                    public void onStart() {
-                        // called before request is started
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+
                     }
 
                     @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
+                    public void onSuccess(int statusCode, Header[] headers, String clientToken) {
+
+
+                        Snackbar snackbar = Snackbar
+                                .make(blistlayout, "Your comments have been posted", Snackbar.LENGTH_LONG);
+
+
+                        snackbar.setActionTextColor(Color.GREEN);
+
+
+                        View sbView = snackbar.getView();
+                        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+                        textView.setTextColor(Color.WHITE);
+                        snackbar.show();
 
 
                         ((Activity_CheckIn) getActivity()).onBackPressed();
 
 
-
                     }
 
-                    @Override
+
+
                     public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e)  {
-                        // Handle the failure and alert the user to retry
+
                         Log.e("ERROR", e.toString());
+
+
                     }
                     @Override
                     public void onRetry(int retryNo) {
                         // called when request is retried
                     }
+
+
                 });
-*/
+
+
 
 
             }
@@ -294,7 +348,7 @@ public class Fragment_New_Comment extends Fragment {
 
                 SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 
-                String cdate = formatter.format(date);
+                fromdate = formatter.format(date);
 
                 formatter = new SimpleDateFormat("EEE MMM dd yyyy");
 

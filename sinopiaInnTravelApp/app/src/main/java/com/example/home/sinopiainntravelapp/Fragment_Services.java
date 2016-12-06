@@ -47,6 +47,7 @@ public class Fragment_Services extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.fragment_rooms, container, false);
 
         Jsonroomlist = new ArrayList<String>();
@@ -58,7 +59,6 @@ public class Fragment_Services extends Fragment {
         mLayoutManager = new LinearLayoutManager(getActivity());
 
         mRecyclerView.setLayoutManager(mLayoutManager);
-
 
         /*responseArray = new JSONArray(getIntent().getExtras().getString("ROOMS"));*/
 
@@ -87,7 +87,9 @@ public class Fragment_Services extends Fragment {
                     }
 
                 } catch (JSONException e) {
+
                     e.printStackTrace();
+
                 }
 
                 //  ((homePage)getActivity()).addBuisnessTypes(foodDataset, bundle.getInt("Fragment"));
@@ -98,11 +100,7 @@ public class Fragment_Services extends Fragment {
         fab.getDrawable().mutate().setTint(ContextCompat.getColor(getActivity(), android.R.color.white));
 
 
-
-
         try {
-
-
 
             rooms = new JSONArray(bundle.getString("BuinsessTypes"));
 
@@ -114,7 +112,7 @@ public class Fragment_Services extends Fragment {
 
             mRecyclerView.setAdapter(mAdapter);
 
-            String images = "[{ \"Type\":\"Culture\",\"Image\":\"ic_local_see_24dp\" },{ \"Type\":\"Beaches\",\"Image\":\"ic_beach_access_black_24dp\"},{ \"Type\":\"Event\",\"Image\":\"ic_event_seat_black_24dp\"},{ \"Type\":\"Food and Drink\",\"Image\":\"ic_restaurant_black_24dp\"},{ \"Type\":\"Lesiure\",\"Image\":\"ic_local_activity_black_24dp\"},{ \"Type\":\"Nightlife\",\"Image\":\"\"},{ \"Type\":\"Shopping\",\"Image\":\"ic_favorite_border_black_24dp\" }]";
+            String images = "[{ \"Type\":\"Culture\",\"Image\":\"ic_local_see_24dp\" },{ \"Type\":\"Beaches\",\"Image\":\"ic_beach_access_black_24dp\"},{ \"Type\":\"Event\",\"Image\":\"ic_event_seat_black_24dp\"},{ \"Type\":\"Food and Drink\",\"Image\":\"ic_restaurant_black_24dp\"},{ \"Type\":\"Lesiure and Nightlife\",\"Image\":\"ic_local_activity_black_24dp\"},{ \"Type\":\"Nightlife\",\"Image\":\"\"},{ \"Type\":\"Shopping\",\"Image\":\"ic_favorite_border_black_24dp\" }]";
 
             icons = new JSONArray(images);
 
@@ -131,11 +129,6 @@ public class Fragment_Services extends Fragment {
         itemDecoration = new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST);
 
         mRecyclerView.addItemDecoration(itemDecoration);
-
-
-
-
-
 
         return rootView;
 

@@ -5,6 +5,7 @@
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     card_view:cardUseCompatPadding="true">
 
     <android.support.design.widget.CoordinatorLayout
@@ -25,6 +26,7 @@
                 android:layout_height="match_parent"
                 app:contentScrim="?attr/colorPrimary"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                android:textSize="24sp"
                 >
 
                 <ImageView
@@ -37,6 +39,7 @@
 
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar"
+
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
                     app:layout_collapseMode="pin"/>
@@ -48,33 +51,104 @@
 
 
 
-        <android.support.v4.widget.NestedScrollView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="horizontal"
+                android:padding="15dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+
+                >
 
 
 
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/fromDateError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
 
-            <TextView
+                    android:layout_weight="1">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16dp"
+                        android:id="@+id/fromdate"
+                        android:hint="From:"
+                        android:focusableInTouchMode="false"
+                        android:tint="@color/colorSecondary"
+                        android:drawableRight="@drawable/ic_date_range_black_24dp"/>
+
+                </android.support.design.widget.TextInputLayout>
+
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/toDateError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+
+                    >
+
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16dp"
+                        android:id="@+id/todate"
+                        android:hint="To:"
+                        android:focusableInTouchMode="false"
+                        android:tint="@color/colorSecondary"
+                        android:drawableRight="@drawable/ic_date_range_black_24dp"/>
+
+                </android.support.design.widget.TextInputLayout>
+
+
+            </LinearLayout>
+
+
+            <android.support.design.widget.TabLayout
+
+                android:id="@+id/tabs"
+
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginBottom="15dp"
+
+                android:theme="@style/AppTheme.NoActionBar.AppBarOverlay"
+
+
+              />
+
+
+            <android.support.v7.widget.RecyclerView
+
+                android:id="@+id/recycler"
+                android:scrollbars="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:scrollbarStyle="insideOverlay"
+                android:layout_centerHorizontal="true" />
 
 
 
-        </android.support.v4.widget.NestedScrollView>
+        </LinearLayout>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:clickable="true"
-android:src="@drawable/ic_reorder_black_24dp"
-            app:layout_anchor="@id/viewA"
-            app:layout_anchorGravity="bottom|right|end"/>
 
 
     </android.support.design.widget.CoordinatorLayout>

@@ -5,6 +5,9 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import java.io.Serializable;
+import java.util.Random;
+
 /**
  * Created by Home on 04/07/16.
  */
@@ -53,6 +56,86 @@ public class ScaleBitMaps {
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeResource(res, resId, options);
+    }
+
+
+    /**
+     * Created by Home on 07/11/16.
+     */
+    public static class ChatMessage implements Serializable {
+
+        public String body, sender, receiver, senderName,createdAt;
+        public String Date, Time;
+        public String msgid;
+        public boolean isMine;
+
+        public ChatMessage(String Sender, String Receiver, String messageString,
+                           String ID, boolean isMINE,String timestamp,String sendername) {
+            body = messageString;
+            isMine = isMINE;
+            sender = Sender;
+            msgid = ID;
+            receiver = Receiver;
+            senderName = sendername;
+            createdAt = timestamp;
+
+        }
+
+        public String getId() {
+            return msgid;
+        }
+
+        public void setId(String id) {
+            this.msgid = id;
+        }
+
+        public String getMessage() {
+            return body;
+        }
+
+        public void setMessage(String message) {
+            this.body = message;
+        }
+
+        public String getCreatedAt() {
+            return createdAt;
+        }
+
+        public void setCreatedAt(String createdAt) {
+            this.createdAt = createdAt;
+        }
+
+        public String getSender() {
+            return sender;
+        }
+
+        public void setSender(String message) {
+            this.sender = message;
+        }
+
+        public String getSenderName() {
+            return senderName;
+        }
+
+        public void setSenderName(String message) {
+            this.senderName = message;
+        }
+
+        public String getReceiver() {
+            return receiver;
+        }
+
+        public void setReceiver(String message) {
+            this.receiver = message;
+        }
+
+        public void setMsgID() {
+
+            msgid += "-" + String.format("%02d", new Random().nextInt(100));
+            ;
+        }
+
+
     }
 
 

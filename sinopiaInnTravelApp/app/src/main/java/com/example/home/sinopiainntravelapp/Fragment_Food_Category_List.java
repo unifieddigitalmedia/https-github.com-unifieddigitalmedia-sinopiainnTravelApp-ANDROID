@@ -1,7 +1,11 @@
 package com.example.home.sinopiainntravelapp;
 
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +19,12 @@ import android.widget.TextView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+
+import layout.Fragment_Book_Description;
 
 
 /**
@@ -68,7 +78,9 @@ public class Fragment_Food_Category_List extends Fragment {
 
         try {
 
+
             mAdapter = new listAdapterFoodCatergory(new JSONArray(getArguments().getString("List")));
+
 
         } catch (JSONException e) {
 
@@ -124,7 +136,7 @@ if(!getActivity().getTitle().toString().matches("Activity_Home")){
 
 
                 mTextView = (TextView) itemView.findViewById(R.id.name);
-                right = (ImageView) itemView.findViewById(R.id.right);
+                descriptionTextView = (TextView) itemView.findViewById(R.id.description);
                 logo = (ImageView) itemView.findViewById(R.id.image);
 
             }
@@ -134,56 +146,92 @@ if(!getActivity().getTitle().toString().matches("Activity_Home")){
             public void onClick(View v) {
 
 
-                if(getArguments().getInt("Menu") == 4) {
+                if(getArguments().getInt("Menu") == 3) {
+
+
+                    Listview_Item_Description new_fragment = new Listview_Item_Description();
+
+                    Bundle bundle1 = new Bundle();
+
+                    bundle1.putInt("Activity",bundle.getInt("Activity"));
+
+                    bundle1.putInt("Activity",bundle.getInt("Activity"));
+                    //bundle1.putString("Meta", String.valueOf((JSONObject) new JSONArray(String.valueOf(foodDataset.get(getLayoutPosition()))).get(0)));
+
+
+                    try {
+                        bundle1.putString("Meta", String.valueOf((JSONObject) foodDataset.get(getLayoutPosition())));
+
+
+                        bundle1.putInt("Menu", bundle.getInt("Menu"));
+
+                        new_fragment.setArguments(bundle1);
+
+                        if(bundle.getInt("Activity") == 0) {
+
+
+                            ((Activity_Home)getActivity()).homePageFadeTransition(new_fragment,"");
+
+
+                        }else {
+
+                            ((Activity_CheckIn)getActivity()).homePageFadeTransition(new_fragment,"");
+
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
 
                 }else{
 
 
 
-                 ImageView staticImage = (ImageView) v.findViewById(R.id.image);
 
-
-                Listview_Item_Description new_fragment = new Listview_Item_Description();
-
-                Bundle bundle1 = new Bundle();
-
-                bundle1.putInt("Activity",bundle.getInt("Activity"));
 
                 try {
 
+                    ImageView staticImage = (ImageView) v.findViewById(R.id.image);
 
+
+                    Fragment_Book_Description new_fragment = new Fragment_Book_Description();
+
+                    Bundle bundle1 = new Bundle();
+
+                    bundle1.putInt("Activity",bundle.getInt("Activity"));
                     //bundle1.putString("Meta", String.valueOf((JSONObject) new JSONArray(String.valueOf(foodDataset.get(getLayoutPosition()))).get(0)));
 
 
                     bundle1.putString("Meta", String.valueOf((JSONObject) foodDataset.get(getLayoutPosition())));
 
+                    bundle1.putInt("Menu", bundle.getInt("Menu"));
 
+                    new_fragment.setArguments(bundle1);
+
+                    if(bundle.getInt("Activity") == 0) {
+
+
+                        ((Activity_Home)getActivity()).homePageFadeTransition(new_fragment,"");
+
+
+                    }else {
+
+                        ((Activity_CheckIn)getActivity()).homePageFadeTransition(new_fragment,"");
+
+                    }
                 } catch (JSONException e) {
 
                     e.printStackTrace();
 
                 }
 
-                bundle1.putInt("Menu", bundle.getInt("Menu"));
 
-                new_fragment.setArguments(bundle1);
-
-                if(bundle.getInt("Activity") == 0) {
-
-
-                   ((Activity_Home)getActivity()).homePageReplaceFragment(new_fragment,staticImage);
-
-
-                }else {
-
-                   ((Activity_CheckIn)getActivity()).homePageReplaceFragment(new_fragment,staticImage);
-
-                }
 
 
 
                 }
+
 
 
             }
@@ -204,7 +252,7 @@ if(!getActivity().getTitle().toString().matches("Activity_Home")){
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.listitemamentitylayout, parent, false);
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.catergorylist, parent, false);
 
             ViewHolder vh = new ViewHolder(v);
 
@@ -212,27 +260,66 @@ if(!getActivity().getTitle().toString().matches("Activity_Home")){
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-
-            try {
-
-
+        public void onBindViewHolder(final ViewHolder holder, int position) {
 
 
               //  JSONObject f = (JSONObject) new JSONArray(String.valueOf(foodDataset.get(position))).get(0);
 
-                JSONObject f = (JSONObject) foodDataset.get(position);
 
+
+            try {
+
+                final JSONObject f = (JSONObject) foodDataset.get(position);
                 holder.mTextView.setText(f.getString("name"));
+                holder.descriptionTextView.setText(f.getString("description"));
 
-                holder.right.setImageResource(R.drawable.ic_chevron_right_24dp);
+
+            new Thread() {
+                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                public void run() {
+
+
+                    try {
+
+                        try ( InputStream is = new URL(f.getString("image_url")).openStream() ) {
+
+                            final Bitmap bitmap = BitmapFactory.decodeStream( is );
+                            //  holder.logo.setImageBitmap(BitmapFactory.decodeFile(bitmaps.get(0)));
+
+                            getActivity().runOnUiThread(new Runnable() {
+
+                                @Override
+                                public void run() {
+
+                                    holder.logo.setImageBitmap(bitmap);
+
+
+                                }
+                            });
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } catch (IOException e) {e.printStackTrace();
+
+                    }
+
+
+
+
+                }
+            }.start();
 
             } catch (JSONException e) {
-
                 e.printStackTrace();
-
             }
 
+
+
+            //URL url = new URL(f.getString("image_url"));
+                //Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                //holder.logo.setImageBitmap(bmp);
 
 
 

@@ -27,15 +27,13 @@
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 >
 
-                <FrameLayout
-
-                    android:id="@+id/container"
+                <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                    android:nestedScrollingEnabled="true"
-                    android:layout_above="@+id/appbar" />
-
+                    android:scaleType="centerCrop"
+                    android:id="@+id/image"
+                    app:layout_collapseMode="parallax"
+                    android:transitionName="mainPic"/>
 
 
                 <android.support.v7.widget.Toolbar
@@ -64,7 +62,17 @@
                 app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
-
+                <TextView
+                    android:id="@+id/travelerrormessage"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:padding="5dp"
+                    android:gravity="center"
+                    android:textSize="14dp"
+                    android:fontFamily="sans-serif"
+                    android:textColor="@color/bt_red"
+                    />
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
@@ -80,11 +88,13 @@
                         android:textSize="16dp"
                         android:id="@+id/rooms"
                         android:hint="Select a special interest"
-                        android:drawableRight="@drawable/ic_favorite_border_black_24dp"
+                        android:drawableRight="@drawable/ic_favorite_black_24dp"
 
                         android:focusableInTouchMode="false"/>
 
                 </android.support.design.widget.TextInputLayout>
+
+
 
 
 
@@ -133,6 +143,7 @@
 
 
                 <TextView
+                    android:id="@+id/errormessage"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
@@ -162,15 +173,6 @@
         </android.support.v4.widget.NestedScrollView>
 
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:clickable="true"
-            android:src="@drawable/ic_record_voice_over_black_24dp"
-            app:layout_anchor="@id/viewA"
-            app:layout_anchorGravity="bottom|right|end"/>
 
 
     </android.support.design.widget.CoordinatorLayout>

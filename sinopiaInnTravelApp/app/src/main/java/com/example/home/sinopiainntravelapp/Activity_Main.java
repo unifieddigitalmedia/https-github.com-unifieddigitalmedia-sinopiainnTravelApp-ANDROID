@@ -2,8 +2,12 @@ package com.example.home.sinopiainntravelapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -13,10 +17,19 @@ import android.widget.ImageView;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.SyncHttpClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.concurrent.Executors;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -35,6 +48,9 @@ public class Activity_Main extends AppCompatActivity {
     static Activity_Main mainActivity;
     static String guestName;
 
+
+
+
     public static Activity_Main getInstance(){
         return   mainActivity;
     }
@@ -47,6 +63,8 @@ public class Activity_Main extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mainActivity = this;
+
+
 
         imgView = (ImageView) findViewById(R.id.backgrounImage);
 
@@ -64,7 +82,7 @@ public class Activity_Main extends AppCompatActivity {
 
 
 
-                if(settings.getString("token", "").matches("") ){
+                if(settings.getString("token","").matches("") ){
 
                     Intent intent = new Intent(getBaseContext(), Activity_Login.class);
 
@@ -209,12 +227,21 @@ public class Activity_Main extends AppCompatActivity {
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME_1, 0);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putString("guestName", guestName);
+        editor.putString("c", guestName);
         editor.commit();
 
-        Intent intent = new Intent(getBaseContext(), Activity_CheckIn.class);
 
-        startActivity(intent);
+        Intent mServiceIntent = new Intent(this, Timeline_Service.class);
+
+        mServiceIntent.putExtra("name", guestName);
+
+        startService(mServiceIntent);
+
+
+
+        //Intent intent = new Intent(getBaseContext(), Activity_CheckIn.class);
+
+        //startActivity(intent);
 
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
@@ -231,5 +258,7 @@ public class Activity_Main extends AppCompatActivity {
 
 
     }
-}
 
+
+
+}

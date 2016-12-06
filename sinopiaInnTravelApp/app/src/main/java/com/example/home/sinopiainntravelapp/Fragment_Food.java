@@ -1,7 +1,11 @@
 package com.example.home.sinopiainntravelapp;
 
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -10,6 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +25,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Random;
 
 
@@ -73,6 +83,8 @@ public class Fragment_Food extends Fragment {
 
             fab.setImageResource(R.drawable.ic_record_voice_over_black_24dp);
 
+            fab.setVisibility(View.GONE);
+
         }else if (getArguments().getInt("Menu") == 2){
 
 
@@ -81,7 +93,7 @@ public class Fragment_Food extends Fragment {
 
 
 
-        }else if (getArguments().getInt("Menu") == 3) {
+        }else if (getArguments().getInt("Menu") == 6) {
 
 
             fab.setImageResource(R.drawable.ic_edit_black_24dp);
@@ -95,10 +107,12 @@ public class Fragment_Food extends Fragment {
 
             fab.setImageResource(R.drawable.ic_done_24dp);
 
+            fab.setVisibility(View.GONE);
+
         }
 
 
-             if(getArguments().getInt("Menu") == 3){
+             if(getArguments().getInt("Menu") == 6){
 
 
                  fab.setOnClickListener(new View.OnClickListener() {
@@ -107,7 +121,7 @@ public class Fragment_Food extends Fragment {
 
 
 
-                         ((Activity_CheckIn)getActivity()).homePageFadeTransition(new Fragment_New_Comment());
+                         ((Activity_CheckIn)getActivity()).homePageFadeTransition(new Fragment_New_Comment(),"");
 
 
                 }
@@ -145,7 +159,7 @@ public class Fragment_Food extends Fragment {
 
         mRecyclerView.setHasFixedSize(true);
 
-        if(getArguments().getInt("Menu") == 3) {
+        if(getArguments().getInt("Menu") == 6) {
 
 
             mLayoutManager = new LinearLayoutManager(getActivity());
@@ -155,8 +169,9 @@ public class Fragment_Food extends Fragment {
         }else {
 
 
-            mLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+            //mLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
 
+            mLayoutManager = new LinearLayoutManager(getActivity());
 
         }
 
@@ -204,7 +219,7 @@ public class Fragment_Food extends Fragment {
 
                 itemView.setOnClickListener(this);
 
-                if(getArguments().getInt("Menu") != 3){
+                if(getArguments().getInt("Menu") != 6){
 
                     mTextView = (TextView) itemView.findViewById(R.id.foodName);
 
@@ -246,7 +261,7 @@ public class Fragment_Food extends Fragment {
             @Override
             public void onClick(View v) {
 
-                if(getArguments().getInt("Menu") != 3){
+                if(getArguments().getInt("Menu") != 6){
 
                     ImageView staticImage = (ImageView) v.findViewById(R.id.placeHolder);
 
@@ -263,7 +278,7 @@ public class Fragment_Food extends Fragment {
 
                         JSONArray list = new JSONArray(f.getString("items"));
 
-                        bundle1.putString("List",list.toString() );
+                        bundle1.putString("List", f.getString("items"));
 
                     } catch (JSONException e) {
 
@@ -344,7 +359,9 @@ public class Fragment_Food extends Fragment {
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
             View v;
-            if(getArguments().getInt("Menu") != 3){
+
+
+            if(getArguments().getInt("Menu") != 6){
 
                 v = LayoutInflater.from(parent.getContext()).inflate(R.layout.foodlayout, parent, false);
 
@@ -361,18 +378,66 @@ public class Fragment_Food extends Fragment {
             return vh;
         }
 
+        @TargetApi(Build.VERSION_CODES.KITKAT)
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
+        public void onBindViewHolder(final ViewHolder holder, int position) {
 
-            if(getArguments().getInt("Menu") != 3) {
+            if(getArguments().getInt("Menu") != 6) {
 
 
-                try {
 
-                    JSONObject item = (JSONObject) foodDataset.get(position);
+
+
+                    try {
+
+                        JSONObject item = (JSONObject) foodDataset.get(position);
+
+                        final JSONObject firstItem  =  (JSONObject) item.getJSONArray("items").get(0);
+
+                        new Thread() {
+                            public void run() {
+
+
+                                try {
+
+                                    try ( InputStream is = new URL(firstItem.getString("image_url").replaceAll(" ", "%20")).openStream() ) {
+
+                                        final Bitmap bitmap = BitmapFactory.decodeStream( is );
+                                        //  holder.logo.setImageBitmap(BitmapFactory.decodeFile(bitmaps.get(0)));
+
+                                        getActivity().runOnUiThread(new Runnable() {
+
+                                            @Override
+                                            public void run() {
+
+
+
+                                                holder.mImageView.setImageBitmap(bitmap);
+
+                                            }
+                                        });
+
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                } catch (IOException e) {e.printStackTrace();
+
+                                }
+
+
+
+
+                            }
+                        }.start();
+
+
+
+
 
 
                     holder.mTextView.setText(item.getString("type"));
+
 
                 } catch (JSONException e) {
 

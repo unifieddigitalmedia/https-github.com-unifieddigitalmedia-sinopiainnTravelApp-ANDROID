@@ -50,6 +50,7 @@ public class Fragment_PersonalDetails extends Fragment {
     ImageView mImageView;
 
     static  String mCurrentPhotoPath;
+
     public Fragment_PersonalDetails() {
         // Required empty public constructor
     }
@@ -91,8 +92,6 @@ public class Fragment_PersonalDetails extends Fragment {
 
                 Uri photoURI = FileProvider.getUriForFile(getActivity(), "com.example.android.fileprovider", photoFile);
 
-
-
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
 
                 getActivity().startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
@@ -118,43 +117,42 @@ public class Fragment_PersonalDetails extends Fragment {
     }
 
     private void galleryAddPic() {
+
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+
         File f = new File(mCurrentPhotoPath);
+
+       ((Activity_Home) getActivity()).f = f;
+
         Uri contentUri = Uri.fromFile(f);
+
         mediaScanIntent.setData(contentUri);
+
         getActivity().sendBroadcast(mediaScanIntent);
     }
 
     private void setPic() {
 
-        Log.i("photoURI", "setting pic");
-        // Get the dimensions of the View
+
         int targetW = mImageView.getWidth();
         int targetH = mImageView.getHeight();
 
-        // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
 
-        // Determine how much to scale down the image
         int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
 
-        // Decode the image file into a Bitmap sized to fill the View
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
         bmOptions.inPurgeable = true;
 
-        Log.i("mCurrentPhotoPath",mCurrentPhotoPath);
 
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
 
         ((Activity_Home) getActivity()).photofile = mCurrentPhotoPath;
 
-
-        Log.i("bitmap","setting bitmap");
 
         mImageView.setImageBitmap(bitmap);
     }
@@ -203,13 +201,6 @@ public class Fragment_PersonalDetails extends Fragment {
                 dispatchTakePictureIntent();
 
 
-              /*  Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-                if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-
-                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-
-                }*/
 
             }
         });
@@ -282,7 +273,7 @@ public class Fragment_PersonalDetails extends Fragment {
                     String WEB_SERVICE_URL = builder.append("http://www.dragonbayinnjamaica.com/wp-content/plugins/DragonBayInnReserve/app_php_files/booking.php?resID=").append(resID).append("&firstname=").append(firstname.getText()).append("&lastname=").append(lastname.getText())
                             .append("&email=").append(email.getText()).toString();
 
-                    Log.i("checking",WEB_SERVICE_URL);
+
 
                     WebAsyncTask Task = new WebAsyncTask();
 

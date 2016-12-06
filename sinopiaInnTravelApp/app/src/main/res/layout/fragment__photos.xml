@@ -1,0 +1,426 @@
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    card_view:cardUseCompatPadding="true">
+
+    <android.support.design.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/viewA"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:id="@+id/collapsing_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:contentScrim="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                android:textAlignment="viewEnd"
+                >
+
+                <ImageView
+                    android:id="@+id/image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    app:layout_collapseMode="parallax"
+                    android:scaleType="centerCrop" />
+
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:layout_collapseMode="pin"/>
+
+                <ImageView
+                    android:id="@+id/someImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_keyboard_arrow_up_black_48dp1"
+                    android:padding="6dp"
+                    android:layout_gravity="center|bottom"
+                    app:layout_collapseMode="pin"
+                    />
+            </android.support.design.widget.CollapsingToolbarLayout>
+
+        </android.support.design.widget.AppBarLayout>
+
+
+
+        <android.support.v4.widget.NestedScrollView
+            android:id="@id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:fillViewport="true"
+            android:paddingBottom="?android:attr/actionBarSize"
+            >
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical" >
+
+                <HorizontalScrollView
+                    android:id="@+id/horizontalScrollView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+
+
+                        <ImageView
+                            android:id="@+id/effect_black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                           />
+
+
+                        <ImageView
+                            android:id="@+id/effect_boost_1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                             />
+
+
+                        <ImageView
+                            android:id="@+id/effect_boost_2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                            />
+
+
+                        <ImageView
+                            android:id="@+id/effect_boost_3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                            />
+
+                        <ImageView
+                            android:id="@+id/effect_brightness"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                            />
+
+
+
+                        <ImageView
+                            android:id="@+id/effect_color_blue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                             />
+
+
+                        <ImageView
+                            android:id="@+id/effect_color_green"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                             />
+
+
+                        <ImageView
+                            android:id="@+id/effect_color_red"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                             />
+
+
+
+                        <ImageView
+                            android:id="@+id/effect_color_depth_32"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                             />
+
+
+                        <ImageView
+                            android:id="@+id/effect_color_depth_64"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                             />
+
+
+
+                        <ImageView
+                            android:id="@+id/effect_contrast"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                            />
+
+
+
+                        <ImageView
+                            android:id="@+id/effect_emboss"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                            />
+
+
+                        <ImageView
+                            android:id="@+id/effect_engrave"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                             />
+
+
+                        <ImageView
+                            android:id="@+id/effect_flea"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                            />
+
+
+                        <ImageView
+                            android:id="@+id/effect_gamma"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                            />
+
+
+                        <ImageView
+                            android:id="@+id/effect_gaussian_blue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                             />
+
+
+                        <ImageView
+                            android:id="@+id/effect_grayscale"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                             />
+                        <!--<ImageView-->
+                        <!--android:id="@+id/effect_highlight"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:padding="2dp"-->
+                        <!--android:onClick="buttonClicked"-->
+                        <!--android:src="@drawable/effect_highlight" />-->
+
+
+
+                        <ImageView
+                            android:id="@+id/effect_hue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                             />
+
+
+                        <ImageView
+                            android:id="@+id/effect_invert"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                            />
+                        <ImageView
+                            android:id="@+id/effect_mean_remove"
+                            android:layout_width="wrap_content"
+                            android:onClick="buttonClicked"
+                             />
+                        <!--<ImageView-->
+                        <!--android:id="@+id/effect_reflaction"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:padding="2dp"-->
+                        <!--android:onClick="buttonClicked"-->
+                        <!--android:src="@drawable/effect_reflaction" />-->
+                        <ImageView
+                            android:id="@+id/effect_round_corner"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                             />
+                        <ImageView
+                            android:id="@+id/effect_saturation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                            />
+                        <ImageView
+                            android:id="@+id/effect_sepia"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                            />
+                        <ImageView
+                            android:id="@+id/effect_sepia_blue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                           />
+                        <ImageView
+                            android:id="@+id/effect_sepia_green"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                            />
+                        <ImageView
+                            android:id="@+id/effect_sheding_cyan"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                             />
+                        <ImageView
+                            android:id="@+id/effect_sheding_green"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                            />
+                        <ImageView
+                            android:id="@+id/effect_sheding_yellow"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                            />
+                        <ImageView
+                            android:id="@+id/effect_smooth"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                           />
+                        <ImageView
+                            android:id="@+id/effect_tint"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                            />
+                        <ImageView
+                            android:id="@+id/effect_watermark"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="2dp"
+                            android:onClick="buttonClicked"
+                            />
+                    </LinearLayout>
+
+
+                </HorizontalScrollView>
+
+                <android.support.design.widget.TextInputLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="5dp"
+                    android:theme="@style/TextLabel">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16dp"
+                        android:id="@+id/promo"
+                        android:hint="Add Location :"
+                        android:focusableInTouchMode="false"
+                        android:tint="@color/colorSecondary"
+                        android:drawableRight="@drawable/ic_place_black_24dp"/>
+
+                </android.support.design.widget.TextInputLayout>
+
+
+            <LinearLayout
+                android:id="@+id/form"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:background="#91f1f1f1"
+                android:orientation="horizontal"
+                android:paddingBottom="2dp"
+                android:layout_marginTop="5dp">
+
+
+                <EditText
+                    android:id="@+id/title"
+                    android:layout_width="252dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignTop="@+id/button1"
+                    android:layout_toLeftOf="@+id/sendMessageButton"
+                    android:layout_weight="0.72"
+                    android:ems="10"
+                    android:maxHeight="80dp"
+                    android:textSize="16dp"
+                    android:hint="Write A Comment :"/>
+
+                <ImageButton
+                    android:id="@+id/continueBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/send_button"
+                    android:text="d" />
+            </LinearLayout>
+
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
+
+
+    </android.support.design.widget.CoordinatorLayout>
+
+</android.support.v7.widget.CardView>

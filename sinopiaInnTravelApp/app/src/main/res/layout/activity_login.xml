@@ -61,7 +61,7 @@
                 android:id="@+id/amenities"
                 android:textColor="@android:color/white"
                 android:hint="Please enter the check token you received in your email"
-                android:text="lke12us5"
+
 
                 android:drawableRight="@android:drawable/ic_secure"/>
 

@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ public class Fragment_Places extends Fragment {
     private RecyclerView.ItemDecoration itemDecoration;
 
 
+    public JSONArray icons = null;
     public JSONArray rooms = null;
 
     ArrayList<String> Jsonroomlist;
@@ -117,7 +119,9 @@ public class Fragment_Places extends Fragment {
 
             mRecyclerView.setAdapter(mAdapter);
 
+            String images = "[{ \"Type\":\"Culture\",\"Image\":\"ic_local_see_24dp\" },{ \"Type\":\"Beaches\",\"Image\":\"ic_beach_access_black_24dp\"},{ \"Type\":\"Event\",\"Image\":\"ic_event_seat_black_24dp\"},{ \"Type\":\"Food and Drink\",\"Image\":\"ic_restaurant_black_24dp\"},{ \"Type\":\"Lesiure and Nightlife\",\"Image\":\"ic_local_activity_black_24dp\"},{ \"Type\":\"Nightlife\",\"Image\":\"\"},{ \"Type\":\"Shopping\",\"Image\":\"ic_favorite_border_black_24dp\" }]";
 
+            icons = new JSONArray(images);
 
         } catch (JSONException e) {
 
@@ -156,6 +160,7 @@ public class Fragment_Places extends Fragment {
 
 
 
+
             public ViewHolder(View itemView) {
 
                 super(itemView);
@@ -165,6 +170,8 @@ public class Fragment_Places extends Fragment {
                 mTextView = (TextView) itemView.findViewById(R.id.name);
 
                 right = (ImageView) itemView.findViewById(R.id.right);
+
+                logo = (ImageView) itemView.findViewById(R.id.image);
 
             }
 
@@ -178,8 +185,8 @@ public class Fragment_Places extends Fragment {
 
                 try {
 
-
                     if (bundle.getInt("Activity") == 0) {
+
 
                         Bundle bundle = new Bundle();
 
@@ -187,24 +194,23 @@ public class Fragment_Places extends Fragment {
 
                         bundle.putInt("Activity", bundle1.getInt("Activity"));
 
-
                         new_fragment.setArguments(bundle);
 
-                        ((Activity_Home) getActivity()).homePageFadeTransition(new_fragment);
+                        ((Activity_Home) getActivity()).homePageFadeTransition(new_fragment,"");
 
 
                     } else {
 
+
                         Bundle bundle = new Bundle();
 
                         bundle.putString("Place", String.valueOf(rooms.get(getLayoutPosition())));
 
                         bundle.putInt("Activity", bundle1.getInt("Activity"));
 
-
                         new_fragment.setArguments(bundle);
 
-                        ((Activity_CheckIn) getActivity()).homePageFadeTransition(new_fragment);
+                        ((Activity_CheckIn) getActivity()).homePageFadeTransition(new_fragment,"");
 
 
                     }
@@ -263,6 +269,37 @@ public class Fragment_Places extends Fragment {
                 StringBuilder item = new StringBuilder();
 
                 holder.mTextView.setText(place.getString("businessname"));
+
+
+                JSONArray activites = (JSONArray) place.getJSONArray("activity");
+
+
+                for(int x = 0; x < activites.length() ; x++) {
+
+                    JSONObject obj = (JSONObject) activites.get(x);
+
+                    for(int j = 0; j < icons.length() ; j++) {
+
+
+                        JSONObject IC = (JSONObject) icons.get(j);
+
+
+                        if(IC.get("Type").toString().matches(obj.getString("typeofbusiness"))) {
+
+
+                            holder.logo.setImageResource(getResources().getIdentifier(IC.get("Image").toString(),"drawable","com.example.home.sinopiainntravelapp"));
+
+
+                        }
+
+
+                    }
+
+                }
+
+
+
+
 
 
                 if(bundle.getInt("Activity") == 0) {

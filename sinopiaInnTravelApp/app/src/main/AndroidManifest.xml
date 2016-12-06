@@ -3,7 +3,7 @@
    package="com.example.home.sinopiainntravelapp"
 
    >
-
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -11,6 +11,8 @@
         android:required="true" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
 
     <application
@@ -20,6 +22,27 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
        >
+
+        <service
+            android:name="Timeline_Service"
+            android:exported="false"/>
+
+
+        <service
+            android:name="MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".MyFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+
+
 
 
         <provider
@@ -32,7 +55,8 @@
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
 
-        <activity android:name=".Activity_Main">
+        <activity android:name=".Activity_Main" android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,6 +64,8 @@
             </intent-filter>
         </activity>
         <activity
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
             android:name=".Activity_Login"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
@@ -47,13 +73,17 @@
                 android:value="com.example.home.sinopiainntravelapp.Activity_Main" />
         </activity>
         <activity
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
             android:name=".Activity_Home"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.home.sinopiainntravelapp.Activity_Home" />
         </activity>
-        <activity android:name=".Activity_CheckIn">
+        <activity android:name=".Activity_CheckIn" android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
+            android:launchMode="singleTop">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.home.sinopiainntravelapp.Activity_Login" />
@@ -70,8 +100,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
-        <activity android:name=".Activity_Chat"></activity>
 
         <!-- Enables the Android Pay API -->
         <meta-data

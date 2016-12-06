@@ -111,37 +111,37 @@
                 android:orientation="horizontal"
                 android:padding="15dp">
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/rating1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
+                    android:background="@color/bt_white"
                     />
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/rating2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
+                    android:background="@color/bt_white"
                     />
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/rating3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
+                    android:background="@color/bt_white"
                     />
-                <ImageView
+                <ImageButton
                     android:id="@+id/rating4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
+                    android:background="@color/bt_white"
                     />
-                <ImageView
+                <ImageButton
                     android:id="@+id/rating5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
+                    android:background="@color/bt_white"
                     />
 
             </LinearLayout>

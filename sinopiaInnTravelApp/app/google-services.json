@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "131405003693",
+    "firebase_url": "https://sinopia-inn-1354.firebaseio.com",
+    "project_id": "sinopia-inn-1354",
+    "storage_bucket": "sinopia-inn-1354.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:131405003693:android:dfcdbb1333105bc6",
+        "android_client_info": {
+          "package_name": "com.example.home.sinopiainntravelapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "131405003693-b3jfpni3m2n6b2ueqaut2cht73rppoqp.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "131405003693-8d3kptude1a0ftsgis6utb8si07hqbpa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAL63Tc8stNQ-INASDNMEdae9uSQz8keYU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -111,7 +111,7 @@ public class Fragment_BusinessTypes extends Fragment {
 
 
 
-            String images = "[{ \"Type\":\"Culture\",\"Image\":\"ic_local_see_24dp\" },{ \"Type\":\"Beaches\",\"Image\":\"ic_beach_access_black_24dp\"},{ \"Type\":\"Event\",\"Image\":\"ic_event_seat_black_24dp\"},{ \"Type\":\"Food and Drink\",\"Image\":\"ic_restaurant_black_24dp\"},{ \"Type\":\"Lesiure\",\"Image\":\"ic_local_activity_black_24dp\"},{ \"Type\":\"Nightlife\",\"Image\":\"\"},{ \"Type\":\"Shopping\",\"Image\":\"ic_favorite_border_black_24dp\" }]";
+            String images = "[{ \"Type\":\"Culture\",\"Image\":\"ic_local_see_24dp\" },{ \"Type\":\"Beaches\",\"Image\":\"ic_beach_access_black_24dp\"},{ \"Type\":\"Event\",\"Image\":\"ic_event_seat_black_24dp\"},{ \"Type\":\"Food and Drink\",\"Image\":\"ic_restaurant_black_24dp\"},{ \"Type\":\"Lesiure and Nightlife\",\"Image\":\"ic_local_activity_black_24dp\"},{ \"Type\":\"Nightlife\",\"Image\":\"\"},{ \"Type\":\"Shopping\",\"Image\":\"ic_favorite_border_black_24dp\" }]";
             icons = new JSONArray(images);
 
 
@@ -272,7 +272,6 @@ public class Fragment_BusinessTypes extends Fragment {
             if(IC.get("Type").toString().matches(foodDataset.get(position))) {
 
 
-                Log.i("BuinsessTypesIcon",IC.get("Image").toString());
 
                 holder.logo.setImageResource(getResources().getIdentifier(IC.get("Image").toString(),"drawable","com.example.home.sinopiainntravelapp"));
 

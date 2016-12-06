@@ -21,9 +21,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class Fragment_Rooms extends Fragment {
 
 
@@ -38,7 +35,7 @@ public class Fragment_Rooms extends Fragment {
 
 
     public Fragment_Rooms() {
-        // Required empty public constructor
+
     }
 
 
@@ -142,7 +139,6 @@ public class Fragment_Rooms extends Fragment {
         private JSONArray[] foodDataset;
 
         public  class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-            // each data item is just a string in this case
 
             public TextView mTextView , descriptionTextView;
 
@@ -210,9 +206,6 @@ public class Fragment_Rooms extends Fragment {
 
         @Override
         public listAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            // create a new view
-
-
 
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.listitem, parent, false);
 

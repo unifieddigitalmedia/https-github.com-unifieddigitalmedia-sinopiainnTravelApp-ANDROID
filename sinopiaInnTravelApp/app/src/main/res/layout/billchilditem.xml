@@ -12,6 +12,7 @@
         android:layout_gravity="left"
         android:textSize="14sp"
         android:padding="14dp"
+        android:textColor="@color/bt_white"
         android:id="@+id/name"/>
 
     <TextView
@@ -20,6 +21,7 @@
         android:layout_gravity="center_horizontal"
         android:textSize="14sp"
         android:padding="14dp"
+        android:textColor="@color/bt_white"
         android:id="@+id/currency"/>
 
     <TextView
@@ -28,6 +30,7 @@
         android:layout_gravity="right"
         android:textSize="14sp"
         android:padding="14dp"
+        android:textColor="@color/bt_white"
         android:id="@+id/amount"/>
 
 

@@ -1,35 +1,40 @@
 package com.example.home.sinopiainntravelapp;
 
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.os.Environment;
+import android.os.Handler;
+import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.TransitionInflater;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.RelativeLayout;
 
 import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.SyncHttpClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,17 +42,29 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.Executors;
 
 import cz.msebera.android.httpclient.Header;
 
 public class Activity_CheckIn extends AppCompatActivity {
     String[] menu = {
-            "Menu","Concierge","Bookshelf","Guest Book","TV"
+            "Our Villa", "Local Time", "Local Weather", "Menu","Plan A Trip","Bookshelf","Guest Book","Channels"
 
 
     };
+
+    public static final String PREFS_NAME = "checkinToken";
+
+    static  String mCurrentPhotoPath;
 
     private static final int REQUEST_CODE = 0;
 
@@ -60,15 +77,17 @@ public class Activity_CheckIn extends AppCompatActivity {
     JSONArray JsonBusinesses;
 
     JSONArray itinerary;
-    
+
     ArrayList<String> businessTypeList;
 
     ArrayList<String> amenititesTypeList;
 
     private FrameLayout mViewPager;
 
-    LinearLayout overlay;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+
     ImageView overlay_close;
+
     ArrayFilter businessFilter ;
 
     private BottomSheetBehavior mBottomSheetBehavior;
@@ -79,15 +98,51 @@ public class Activity_CheckIn extends AppCompatActivity {
     private RecyclerView.ItemDecoration itemDecoration;
     CoordinatorLayout.Behavior behavior;
     Bundle bundle;
+    CircularProgressView progressView;
 
-    public static final String PREFS_NAME_1 = "guestName";
+    RelativeLayout overlay;
+
+    public static final String PREFS_NAME_1 = "checkinToken";
 
     SharedPreferences settings;
 
+    ArrayList<String> guestbitmapArray;
+    ArrayList<String> guestStringArray;
+
+    JSONArray timelinefiles ;
+
+    ArrayList<String> reservationsContainer ;
+    RelativeLayout relativeLayout;
+    Thread getBitmaps;
+    Thread getGuestBitmaps;
 
     static Activity_CheckIn checkinActivity;
     static public int placePos = 0;
     AsyncHttpClient client;
+
+    String fromdate;
+
+    String location;
+
+    String message;
+
+    String todate;
+    String type = "image/*";
+
+File media;
+
+    String name;
+    String fname;
+    String lname;
+
+    String registrationToken;
+Random random;
+Bitmap bitmap;
+    ArrayList<Bitmap> menubitmapArray = null;
+    final ArrayList<Bitmap> bookbitmapArray = null;
+    java.util.concurrent.ExecutorService executor ;
+    JSONArray files ;
+    ArrayList<Bitmap> bitmapArray ;
     public static Activity_CheckIn getInstance(){
         return   checkinActivity;
     }
@@ -95,53 +150,103 @@ public class Activity_CheckIn extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_home);
 
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
 
+        StringBuilder builder = new StringBuilder();
+
+        settings = getSharedPreferences(PREFS_NAME_1, 0);
+
+        name = builder.append(settings.getString("fname", "")).append(" ").append(settings.getString("lname", "")).toString();
+
+        fname= settings.getString("fname", "");
+
+        lname= settings.getString("lname", "");
+
+        random = new Random();
+
+        guestbitmapArray =  new  ArrayList<>();
+
+        guestStringArray = new  ArrayList<>();
+
+        reservationsContainer = new ArrayList<>();
+
+        progressView = (CircularProgressView) findViewById(R.id.progress_view);
+
+        overlay = (RelativeLayout) findViewById(R.id.overlay);
+
+        overlay.setVisibility(View.GONE);
+
         itinerary = new JSONArray();
 
         bundle = new Bundle();
 
-        checkinActivity = this;
-
-         client = new AsyncHttpClient();
-
-        mViewPager = (FrameLayout) findViewById(R.id.container);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-
-        tabLayout.addTab(tabLayout.newTab().setText("Reception").setIcon(R.drawable.ic_home_white_24dp), 0, true);
-
-        tabLayout.addTab(tabLayout.newTab().setText("Guide").setIcon(R.drawable.ic_map_24dp), 1, false);
-
-
-        tabLayout.addTab(tabLayout.newTab().setText("Help").setIcon(R.drawable.ic_help_24dp), 2, false);
-
-
-
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            tabLayout.getTabAt(1).getIcon().setTint(getResources().getColor(android.R.color.white));
-
-            tabLayout.getTabAt(2).getIcon().setTint(getResources().getColor(android.R.color.white));
-
-        }
-
-
         Fragment_Confirmation openingFragment = new Fragment_Confirmation();
-
-        settings = getSharedPreferences(PREFS_NAME_1, 0);
 
         bundle.putString("fname",settings.getString("fname", ""));
 
         bundle.putString("lname",settings.getString("lname", ""));
 
+        bundle.putString("fromdate",settings.getString("fromdate", ""));
+
+        bundle.putString("todate",settings.getString("todate", ""));
+
+        //files = json;
+
         openingFragment.setArguments(bundle);
 
-        getSupportFragmentManager().beginTransaction().add(R.id.container,openingFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.container,openingFragment,"confirmed").addToBackStack(null).commit();
+
+        checkinActivity = this;
+
+        client = new AsyncHttpClient();
+
+        mViewPager = (FrameLayout) findViewById(R.id.container);
+
+        getGuestAlbum();
+
+        executor = Executors.newSingleThreadExecutor();
+
+        bitmapArray =  new  ArrayList<>();
+
+        checkguestIn();
+
+
+        fromdate = settings.getString("fromdate", "");
+
+        todate = settings.getString("todate", "");
+
+        relativeLayout = (RelativeLayout) findViewById(R.id.relativeLay);
+
+        reservationsContainer = getIntent().getStringArrayListExtra("timeline");
+
+        final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+
+        tabLayout.addTab(tabLayout.newTab().setText("Home").setIcon(R.drawable.ic_logo), 0, true);
+
+        tabLayout.addTab(tabLayout.newTab().setText("Trips").setIcon(R.drawable.ic_timeline_black_24dp), 1, false);
+
+        tabLayout.addTab(tabLayout.newTab().setText("").setIcon(R.drawable.ic_local_see_24dp), 2, false);
+
+        tabLayout.addTab(tabLayout.newTab().setText("Guide").setIcon(R.drawable.ic_card_travel_black_24dp), 3, false);
+
+        tabLayout.addTab(tabLayout.newTab().setText("Help").setIcon(R.drawable.ic_help_24dp), 4, false);
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            tabLayout.getTabAt(0).getIcon().setTint(Color.argb(999,153,153,51));
+            tabLayout.getTabAt(1).getIcon().setTint(getResources().getColor(android.R.color.white));
+            tabLayout.getTabAt(2).getIcon().setTint(getResources().getColor(android.R.color.white));
+            tabLayout.getTabAt(3).getIcon().setTint(getResources().getColor(android.R.color.white));
+            tabLayout.getTabAt(4).getIcon().setTint(getResources().getColor(android.R.color.white));
+        }
+
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -152,25 +257,86 @@ public class Activity_CheckIn extends AppCompatActivity {
                     case 0:
 
 
-                        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, new Fragment_Confirmation()).addToBackStack(null).commit();
+                           getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, new Fragment_Confirmation()).addToBackStack(null).commit();
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+                            tabLayout.getTabAt(0).getIcon().setTint(Color.argb(999,153,153,51));
+                            tabLayout.getTabAt(1).getIcon().setTint(getResources().getColor(android.R.color.white));
+                            tabLayout.getTabAt(2).getIcon().setTint(getResources().getColor(android.R.color.white));
+                            tabLayout.getTabAt(3).getIcon().setTint(getResources().getColor(android.R.color.white));
+                            tabLayout.getTabAt(4).getIcon().setTint(getResources().getColor(android.R.color.white));
+
+
+
+                        }
+
+
 
                         break;
 
                     case 1:
 
 
-                        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, new Fragment_Travel_Tips()).addToBackStack(null).commit();
+
+                            goToTimeline();
+
+
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            tabLayout.getTabAt(0).getIcon().setTint(getResources().getColor(android.R.color.white));
+                            tabLayout.getTabAt(1).getIcon().setTint(Color.argb(999,153,153,51));
+                            tabLayout.getTabAt(2).getIcon().setTint(getResources().getColor(android.R.color.white));
+                            tabLayout.getTabAt(3).getIcon().setTint(getResources().getColor(android.R.color.white));
+                            tabLayout.getTabAt(4).getIcon().setTint(getResources().getColor(android.R.color.white));
+
+                        }
+
 
                         break;
 
                     case 2:
 
 
-                        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, new Fragment_Contact_Page()).addToBackStack(null).commit();
+                        dispatchTakePictureIntent();
+
+
+
+                        break;
+
+                    case 3:
+
+
+                        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, new Fragment_Travel_Tips()).addToBackStack(null).commit();
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            tabLayout.getTabAt(0).getIcon().setTint(getResources().getColor(android.R.color.white));
+                            tabLayout.getTabAt(1).getIcon().setTint(getResources().getColor(android.R.color.white));
+                            tabLayout.getTabAt(2).getIcon().setTint(getResources().getColor(android.R.color.white));
+                            tabLayout.getTabAt(3).getIcon().setTint(Color.argb(999,153,153,51));
+                            tabLayout.getTabAt(4).getIcon().setTint(getResources().getColor(android.R.color.white));
+
+                        }
+
 
                         break;
 
 
+                    case 4:
+
+
+                        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, new Fragment_Contact_Page()).addToBackStack(null).commit();
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            tabLayout.getTabAt(0).getIcon().setTint(getResources().getColor(android.R.color.white));
+                            tabLayout.getTabAt(1).getIcon().setTint(getResources().getColor(android.R.color.white));
+                            tabLayout.getTabAt(2).getIcon().setTint(getResources().getColor(android.R.color.white));
+                            tabLayout.getTabAt(3).getIcon().setTint(getResources().getColor(android.R.color.white));
+                            tabLayout.getTabAt(4).getIcon().setTint(Color.argb(999,153,153,51));
+
+                        }
+
+                        break;
                 }
 
 
@@ -190,7 +356,16 @@ public class Activity_CheckIn extends AppCompatActivity {
 
                 {
 
-                    getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, new Fragment_Confirmation()).addToBackStack(null).commit();
+
+                        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, new Fragment_Confirmation()).addToBackStack(null).commit();
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        tabLayout.getTabAt(0).getIcon().setTint(Color.argb(999,153,153,51));
+                        tabLayout.getTabAt(1).getIcon().setTint(getResources().getColor(android.R.color.white));
+                        tabLayout.getTabAt(2).getIcon().setTint(getResources().getColor(android.R.color.white));
+                        tabLayout.getTabAt(3).getIcon().setTint(getResources().getColor(android.R.color.white));
+                        tabLayout.getTabAt(4).getIcon().setTint(getResources().getColor(android.R.color.white));
+                    }
 
 
                 } else if (tab.getPosition() == 1)
@@ -199,7 +374,29 @@ public class Activity_CheckIn extends AppCompatActivity {
                 {
 
 
-                    getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, new Fragment_Travel_Tips()).addToBackStack(null).commit();
+                    if(reservationsContainer.size() == 0 ) {
+
+                        getGuestAlbum();
+
+                        goToTimeline();
+
+
+                    }else{
+
+
+                        goToTimeline();
+
+
+                    }
+
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        tabLayout.getTabAt(0).getIcon().setTint(getResources().getColor(android.R.color.white));
+                        tabLayout.getTabAt(1).getIcon().setTint(Color.argb(999,153,153,51));
+                        tabLayout.getTabAt(2).getIcon().setTint(getResources().getColor(android.R.color.white));
+                        tabLayout.getTabAt(3).getIcon().setTint(getResources().getColor(android.R.color.white));
+                        tabLayout.getTabAt(4).getIcon().setTint(getResources().getColor(android.R.color.white));
+                    }
 
 
                 } else if (tab.getPosition() == 2)
@@ -208,11 +405,44 @@ public class Activity_CheckIn extends AppCompatActivity {
                 {
 
 
-                    getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, new Fragment_Contact_Page()).addToBackStack(null).commit();
+                    dispatchTakePictureIntent();
+
+
+
+                }else if (tab.getPosition() == 3)
+
+
+                {
+
+
+                    getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, new Fragment_Travel_Tips()).addToBackStack(null).commit();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        tabLayout.getTabAt(0).getIcon().setTint(getResources().getColor(android.R.color.white));
+                        tabLayout.getTabAt(1).getIcon().setTint(getResources().getColor(android.R.color.white));
+                        tabLayout.getTabAt(2).getIcon().setTint(getResources().getColor(android.R.color.white));
+                        tabLayout.getTabAt(3).getIcon().setTint(Color.argb(999,153,153,51));
+                        tabLayout.getTabAt(4).getIcon().setTint(getResources().getColor(android.R.color.white));
+                    }
 
 
                 }
+                else if (tab.getPosition() == 4)
 
+
+                {
+
+
+                    getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, new Fragment_Contact_Page()).addToBackStack(null).commit();
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        tabLayout.getTabAt(0).getIcon().setTint(getResources().getColor(android.R.color.white));
+                        tabLayout.getTabAt(1).getIcon().setTint(getResources().getColor(android.R.color.white));
+                        tabLayout.getTabAt(2).getIcon().setTint(getResources().getColor(android.R.color.white));
+                        tabLayout.getTabAt(3).getIcon().setTint(getResources().getColor(android.R.color.white));
+                        tabLayout.getTabAt(4).getIcon().setTint(Color.argb(999,153,153,51));
+                    }
+
+                }
 
             }
         });
@@ -220,29 +450,59 @@ public class Activity_CheckIn extends AppCompatActivity {
 
     }
 
-
-    @Override
-    public void onBackPressed() {
+    private void goToTimeline() {
 
 
+        if(reservationsContainer.size() == 0){
 
-        getSupportFragmentManager().popBackStack();
+
+            //progressView.startAnimation();
+
+            //overlay.setVisibility(View.VISIBLE);
+
+
+        } else {
+
+
+            Fragment_Timeline new_fragment = new Fragment_Timeline();
+
+            Bundle bundle = new Bundle ();
+
+            bundle.putStringArrayList("photo_files", reservationsContainer);
+
+            new_fragment.setArguments(bundle);
+
+            homePageFadeTransition(new_fragment,"");
+
+
+        }
+
+
 
 
     }
 
-    public void showOverlay() {
+    private void getGuestAlbum() {
 
-        BottomSheetDialogFragment bottomSheetDialogFragment = new TutsPlusBottomSheetDialogFragment();
-        bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
 
     }
+
 
     @Override
     protected void onStop() {
+
         super.onStop();
 
-        finish();
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.container);
+
+
+        if(!"confirmed".equals(currentFragment.getTag())) {
+
+
+            finish();
+
+
+        }
     }
 
     public void homePageReplaceFragment(Fragment s,ImageView i ) {
@@ -272,12 +532,13 @@ public class Activity_CheckIn extends AppCompatActivity {
         }
 
 
-    }//
-
-    public void homePageFadeTransition(Fragment new_fragment) {
+    }
 
 
-        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, new_fragment ).addToBackStack(null).commit();
+    public void homePageFadeTransition(Fragment new_fragment,String tag) {
+
+
+        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, new_fragment,tag ).addToBackStack(null).commit();
 
 
     }
@@ -332,17 +593,21 @@ public class Activity_CheckIn extends AppCompatActivity {
 
     }
 
-    public void goToChat() {
 
 
-        Log.i("chat", "going to chat");
+    public void goToWeb (String url) {
 
-       /* Intent intent = new Intent(getBaseContext(), Chat.class);
 
-        startActivity(intent);
 
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);*/
+        Fragment_Web new_fragment = new Fragment_Web();
 
+        Bundle bundle1 = new Bundle();
+
+        bundle1.putString("url",url);
+
+        new_fragment.setArguments(bundle1);
+
+        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, new_fragment ).addToBackStack(null).commit();
 
 
 
@@ -374,8 +639,6 @@ public class Activity_CheckIn extends AppCompatActivity {
 
         client.setConnectTimeout(20000);
 
-        Log.i("params", String.valueOf(params));
-
         client.post("http://www.sinopiainn.com/api/business-rates/", params , new JsonHttpResponseHandler() {
 
             @Override
@@ -388,13 +651,29 @@ public class Activity_CheckIn extends AppCompatActivity {
             public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
 
 
-                Log.i("Reservation Response", String.valueOf(json));
+                Snackbar snackbar = null;
+
+                try {
+                    snackbar = Snackbar
+                            .make(relativeLayout, String.valueOf(json.get("ERROR")), Snackbar.LENGTH_LONG);
+                    snackbar.show();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+
+
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e)  {
 
-                Log.e("ERROR", e.toString());
+                Snackbar snackbar = Snackbar
+                        .make(relativeLayout, "Processing your payment", Snackbar.LENGTH_LONG);
+
+                snackbar.show();
             }
 
             @Override
@@ -429,7 +708,249 @@ public class Activity_CheckIn extends AppCompatActivity {
 
             }
 
-        }
+        }else{
+
+
+                galleryAddPic();
+
+
+
+
+                new Handler().post(new Runnable() {
+
+                    public void run() {
+
+
+                        Fragment_Photos_Big new_fragment = new Fragment_Photos_Big();
+
+                        Bundle bundle1 = new Bundle();
+
+                        bundle1.putString("image_path",mCurrentPhotoPath);
+
+                        bundle1.putString("tab","2");
+
+                        new_fragment.setArguments(bundle1);
+
+                        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, new_fragment ).addToBackStack(null).commit();
+
+                    }
+                });
+
+            }
+
+    }
+
+
+
+
+    public void selectMenuItem (final int position, String web_url) {
+
+
+        client = new AsyncHttpClient();
+
+        client.setConnectTimeout(20000);
+
+        client.get(web_url, new JsonHttpResponseHandler() {
+
+            @Override
+            public void onStart() {
+                // called before request is started
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, final JSONArray json) {
+
+                switch (position) {
+
+                    case 0:
+
+
+
+                        break;
+
+                    case 1:
+
+
+
+
+                    case 2:
+
+
+
+                        break;
+                    case 3:
+
+                        menubitmapArray  = new ArrayList<>();
+
+                        new Thread() {
+                            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                            public void run() {
+
+
+                        for (int i = 0; i < json.length(); i++) {
+
+
+                            JSONObject item = null;
+                            try {
+                                item = (JSONObject) json.get(i);
+
+                                final JSONObject firstItem  =  (JSONObject) item.getJSONArray("items").get(0);
+
+                                try {
+
+                                    try ( InputStream is = new URL(firstItem.getString("image_url").replaceAll(" ", "%20")).openStream() ) {
+
+                                        final Bitmap bitmap = BitmapFactory.decodeStream( is );
+
+                                        menubitmapArray.add(bitmap);
+
+
+
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                } catch (IOException e) {e.printStackTrace();
+
+
+                                }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
+
+
+
+
+
+
+
+                                }
+
+
+
+                                runOnUiThread(new Runnable() {
+
+                                    @Override
+                                    public void run() {
+
+
+                                        Fragment_Photos new_fragment =  new Fragment_Photos() ;
+
+                                        Bundle bundle = new Bundle ();
+
+                                        bundle.putInt("Activity", 1);
+
+                                        bundle.putInt("Menu", position);
+
+                                        bundle.putString("Json", json.toString());
+
+                                        new_fragment.setArguments(bundle);
+
+                                        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container,new_fragment).addToBackStack(null).commit();
+
+
+                                    }
+                                });
+
+                        }
+
+                        }.start();
+
+
+
+
+
+
+                        break;
+                    case 4:
+
+                        JsonBusinesses = json;
+
+                        Fragment_Travel_Planner travel =  new Fragment_Travel_Planner() ;
+
+                        travel.setArguments(bundle);
+
+
+                        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out).replace(R.id.container,travel).addToBackStack(null).commit();
+
+
+                        break;
+                    case 5:
+
+
+                        Fragment_Photos bookShelf =  new Fragment_Photos() ;
+
+                        bundle.putInt("Activity", 1);
+
+                        bundle.putInt("Menu", position);
+
+                        bundle.putString("Json",  json.toString());
+
+                        bookShelf.setArguments(bundle);
+
+                        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, bookShelf).addToBackStack(null).commit();
+
+
+
+                        break;
+
+                    case 6:
+
+
+                        Fragment_Food guestBook =  new Fragment_Food() ;
+
+                        bundle.putInt("Activity", 1);
+
+                        bundle.putInt("Menu", position);
+
+                        bundle.putString("Json","[{\"name\":\"Camel\",\"date\":\"20-04-2016\",\"rating\":\"3\",\"comment\":\"The Vette Kat Harbour Bed & Breakfast has two distinct competitive edges that differentiates it from the competition.  The first is the never-ending attention to detail and customer service.  The St. Lucia's recognize that their mission is to ensure that their customers have the finest stay with them.  Both Kayman and Jenné will do whatever it takes to ensure the customer's happiness.  This will be showcased in breakfast which will offer Starbucks Authorized and Certified Training System of Coffee and Tazo Tea service.\"},{\"name\":\"puce\",\"date\":\"20-04-2016\",\"rating\":\"4\",\"comment\":\"test comment\"},{\"name\":\"Test\",\"date\":\"20-04-2016\",\"rating\":\"4\",\"comment\":\"test comment\"}]");
+
+                        guestBook.setArguments(bundle);
+
+                        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, guestBook).addToBackStack(null).commit();
+
+
+                        break;
+
+                    case 7:
+
+
+
+
+                        break;
+
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e)  {
+
+
+                    Snackbar snackbar = null;
+
+                    snackbar = Snackbar
+                            .make(relativeLayout, "One moment please" , Snackbar.LENGTH_LONG);
+                    snackbar.show();
+
+
+
+
+            }
+            @Override
+            public void onRetry(int retryNo) {
+
+            }
+        });
+
+
+
+
 
     }
 
@@ -457,440 +978,384 @@ public class Activity_CheckIn extends AppCompatActivity {
 
     }
 
-
-    private class foodAdapter extends RecyclerView.Adapter<foodAdapter.ViewHolder> {
-
-        private String[] foodDataset;
-        private Random mRandom = new Random();
-
-        private Integer[] icons = {
-
-                R.drawable.ic_restaurant_black_24dp, R.drawable.ic_map_24dp, R.drawable.ic_bookmark_outline_24dp,R.drawable.ic_local_library_24dp,R.drawable.ic_local_movies_24dp,R.drawable.ic_shopping_basket_24dp
-        };
+    @Override
+    public void onBackPressed() {
 
 
 
-        public  class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-            // each data item is just a string in this case
-
-            public TextView mTextView ;
+        getSupportFragmentManager().popBackStack();
 
 
-            public ImageView image ;
+    }
 
+    static final int REQUEST_TAKE_PHOTO = 1;
 
+    private void dispatchTakePictureIntent() {
 
-            public ViewHolder(View itemView) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                super(itemView);
+        if (takePictureIntent.resolveActivity(this.getPackageManager()) != null) {
 
-                itemView.setOnClickListener(this);
+            File photoFile = null;
 
-                mTextView = (TextView) itemView.findViewById(R.id.name);
+            try {
 
-                image = (ImageView) itemView.findViewById(R.id.image);
+                photoFile = createImageFile();
+
+            } catch (IOException ex) {
 
 
             }
 
 
-            @Override
-            public void onClick(View v) {
+            if (photoFile != null) {
 
-                final int position = getLayoutPosition();
+                Uri photoURI = FileProvider.getUriForFile(this, "com.example.android.fileprovider", photoFile);
 
-                // ((homePage)getActivity()).homePageReplaceFragment("roomsList");
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
 
+                this.startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
 
-                bundle.putInt("Activity", 1);
+            }
+        }
+    }
 
+    private File createImageFile() throws IOException {
 
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,
+                ".jpg",
+                storageDir
+        );
 
-                switch (position) {
-                    case 0:
 
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
 
-                        ((BottomSheetBehavior) behavior).setState(BottomSheetBehavior.STATE_COLLAPSED);
+    private void galleryAddPic() {
 
 
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(mCurrentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
 
 
-                        client = new AsyncHttpClient();
+    }
 
-                        client.setConnectTimeout(20000);
 
-                        client.get("http://www.sinopiainn.com/api/menu", new JsonHttpResponseHandler() {
+    public void goTochat() {
 
-                            @Override
-                            public void onStart() {
-                                // called before request is started
-                            }
 
-                            @Override
-                            public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
 
+        SharedPreferences.Editor editor = settings.edit();
 
-                                ((BottomSheetBehavior) behavior).setState(BottomSheetBehavior.STATE_COLLAPSED);
+        editor.putString("registration_token", FirebaseInstanceId.getInstance().getToken());
 
-                                Fragment_Food new_fragment =  new Fragment_Food() ;
+        Fragment_Chats new_fragment = new Fragment_Chats();
 
-                                bundle.putInt("Activity", 1);
+        Bundle bundle = new Bundle();
 
-                                bundle.putInt("Menu", position);
+        bundle.putString("registration_token",FirebaseInstanceId.getInstance().getToken());
 
-                                bundle.putString("Json", json.toString());
+        StringBuilder builder = new StringBuilder();
 
-                                new_fragment.setArguments(bundle);
+        bundle.putString("name", builder.append(settings.getString("fname", "")).append(" ").append(settings.getString("lname", "")).toString());
 
-                                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container,new_fragment).addToBackStack(null).commit();
+        bundle.putString("email","");
 
+        homePageFadeTransition(new_fragment,"chat");
 
-                            }
+    }
 
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e)  {
-                                // Handle the failure and alert the user to retry
-                                Log.e("ERROR", e.toString());
-                            }
-                            @Override
-                            public void onRetry(int retryNo) {
-                                // called when request is retried
-                            }
-                        });
+    @Override
+    protected void onNewIntent(Intent intent) {
 
-                        break;
 
-                    case 1:
+        super.onNewIntent(intent);
 
-                        ((BottomSheetBehavior) behavior).setState(BottomSheetBehavior.STATE_COLLAPSED);
+        setIntent(intent);
 
+                if( intent.getBooleanExtra("chat",false) ){
 
-                        String WEB_SERVICE_URL = "http://www.sinopiainn.com/api/businesses";
 
-                         client = new AsyncHttpClient();
+                    Fragment_Chats new_fragment = new Fragment_Chats();
 
-                        client.setConnectTimeout(20000);
-                        client.get(WEB_SERVICE_URL, new JsonHttpResponseHandler() {
+                    Bundle bundle = new Bundle();
 
-                            @Override
-                            public void onStart() {
-                                // called before request is started
-                            }
+                    bundle.putString("message",intent.getExtras().getString("message"));
 
-                            @Override
-                            public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
+                    homePageFadeTransition(new_fragment,"chat");
+                }else{
 
 
-                                JsonBusinesses = json;
-
-                                Fragment_Travel_Planner travel =  new Fragment_Travel_Planner() ;
-
-                                travel.setArguments(bundle);
-
-
-                                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out).replace(R.id.container,travel).addToBackStack(null).commit();
-
-                            }
-
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e)  {
-                                // Handle the failure and alert the user to retry
-                                Log.e("ERROR", e.toString());
-                            }
-                            @Override
-                            public void onRetry(int retryNo) {
-                                // called when request is retried
-                            }
-                        });
-
-
-                        break;
-
-                    case 2:
-
-                        ((BottomSheetBehavior) behavior).setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-                        client = new AsyncHttpClient();
-
-                        client.setConnectTimeout(20000);
-
-                        client.get("http://www.sinopiainn.com/api/books", new JsonHttpResponseHandler() {
-
-                            @Override
-                            public void onStart() {
-                                // called before request is started
-                            }
-
-                            @Override
-                            public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
-
-                                ((BottomSheetBehavior) behavior).setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-                                Fragment_Food bookShelf =  new Fragment_Food() ;
-
-                                bundle.putInt("Activity", 1);
-
-                                bundle.putInt("Menu", position);
-
-                                bundle.putString("Json",  json.toString());
-
-                                bookShelf.setArguments(bundle);
-
-                                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, bookShelf).addToBackStack(null).commit();
-
-
-                            }
-
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e)  {
-                                // Handle the failure and alert the user to retry
-                                Log.e("ERROR", e.toString());
-                            }
-                            @Override
-                            public void onRetry(int retryNo) {
-                                // called when request is retried
-                            }
-                        });
-
-                        break;
-                    case 3:
-
-    String json ="[{\"name\":\"Camel\",\"date\":\"20-04-2016\",\"rating\":\"3\",\"comment\":\"The Vette Kat Harbour Bed & Breakfast has two distinct competitive edges that differentiates it from the competition.  The first is the never-ending attention to detail and customer service.  The St. Lucia's recognize that their mission is to ensure that their customers have the finest stay with them.  Both Kayman and Jenné will do whatever it takes to ensure the customer's happiness.  This will be showcased in breakfast which will offer Starbucks Authorized and Certified Training System of Coffee and Tazo Tea service.\"},{\"name\":\"puce\",\"date\":\"20-04-2016\",\"rating\":\"4\",\"comment\":\"test comment\"},{\"name\":\"Test\",\"date\":\"20-04-2016\",\"rating\":\"4\",\"comment\":\"test comment\"}]";
-
-                        Fragment_Food guestBook =  new Fragment_Food() ;
-
-                        bundle.putInt("Activity", 1);
-
-                        bundle.putInt("Menu", position);
-
-                        bundle.putString("Json",json);
-
-                        guestBook.setArguments(bundle);
-
-                        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, guestBook).addToBackStack(null).commit();
-
-
-
-
-                      /*  ((BottomSheetBehavior) behavior).setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-                        client = new AsyncHttpClient();
-
-                        client.setConnectTimeout(20000);
-
-                        client.get("http://www.sinopiainn.com/api/reviews", new JsonHttpResponseHandler() {
-
-                            @Override
-                            public void onStart() {
-                                // called before request is started
-                            }
-
-                            @Override
-                            public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
-
-                                ((BottomSheetBehavior) behavior).setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-                                Fragment_Food guestBook =  new Fragment_Food() ;
-
-                                bundle.putInt("Activity", 1);
-
-                                bundle.putInt("Menu", position);
-
-                                bundle.putString("Json",json.toString());
-
-                                guestBook.setArguments(bundle);
-
-                                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, guestBook).addToBackStack(null).commit();
-
-
-                            }
-
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e)  {
-                                // Handle the failure and alert the user to retry
-                                Log.e("ERROR", e.toString());
-                            }
-                            @Override
-                            public void onRetry(int retryNo) {
-                                // called when request is retried
-                            }
-                        });
-*/
-
-                        break;
-                    case 4:
-
-
-                        ((BottomSheetBehavior) behavior).setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-                        client = new AsyncHttpClient();
-
-                        client.setConnectTimeout(20000);
-
-                        client.get("http://www.sinopiainn.com/api/tv", new JsonHttpResponseHandler() {
-
-                            @Override
-                            public void onStart() {
-                                // called before request is started
-                            }
-
-                            @Override
-                            public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
-
-                                ((BottomSheetBehavior) behavior).setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-                                Fragment_Food tv =  new Fragment_Food() ;
-
-                                bundle.putInt("Activity", 1);
-
-                                bundle.putInt("Menu", position);
-
-                                bundle.putString("Json",json.toString());
-
-                                tv.setArguments(bundle);
-
-                                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, tv).addToBackStack(null).commit();
-
-
-                            }
-
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e)  {
-                                // Handle the failure and alert the user to retry
-                                Log.e("ERROR", e.toString());
-                            }
-                            @Override
-                            public void onRetry(int retryNo) {
-                                // called when request is retried
-                            }
-                        });
-
-
-
-                        break;
-                    case 5:
-
-
-                       /* ((BottomSheetBehavior) behavior).setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-                        fragment_shop shop =  new fragment_shop() ;
-
-                        shop.setArguments(bundle);
-
-
-                        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out).replace(R.id.container, shop).addToBackStack(null).commit();
-*/
-                        break;
+                    reservationsContainer = intent.getStringArrayListExtra("timeline");
 
 
                 }
 
 
+
+
+    }
+
+    public void onRestart() {
+
+        super.onRestart();
+    }
+
+
+
+    public void onStart() {
+
+        super.onStart();
+    }
+
+
+    public void onResume() {
+
+        super.onResume();
+    }
+
+
+    public void onPause() {
+
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+
+        super.onDestroy();
+    }
+
+
+
+
+    public void uploadImageToTimeline(String msg, String address) {
+
+
+
+        client = new AsyncHttpClient();
+
+        client.setConnectTimeout(100000);
+
+
+        RequestParams params = new RequestParams();
+
+
+            if (media != null) {
+
+                try {
+                    params.put("displayImage", media);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+
             }
 
+
+
+
+        StringBuilder builder = new StringBuilder();
+
+        String WEB_SERVICE_URL = null;
+        try {
+
+
+            WEB_SERVICE_URL = builder.append("http://www.sinopiainn.com/api/upload-reservation-photo?resID=")
+                    .append(settings.getString("reservationID", ""))
+                    .append("&message=").append(URLEncoder.encode(msg, "utf-8"))
+                    .append("&address=").append(URLEncoder.encode(address, "utf-8")).toString();
+
+
+        } catch (UnsupportedEncodingException e) {
+
+            e.printStackTrace();
         }
 
-        public foodAdapter(Object p0) {
-
-        }
-
-        // Provide a suitable constructor (depends on the kind of dataset)
-        public foodAdapter(Context context, String[] foodset) {
-
-            foodDataset = foodset;
-
-        }
 
 
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.listitemamentitylayout, parent, false);
+        client.post(WEB_SERVICE_URL, params, new JsonHttpResponseHandler() {
 
-            ViewHolder vh = new ViewHolder(v);
-
-            return vh;
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-
-            holder.mTextView.setText(foodDataset[position]);
-            holder.image.setImageResource(icons[position]);
+                @Override
+                public void onStart() {
 
 
-        }
-        @Override
-        public int getItemCount() {
-            return foodDataset.length;
-        }
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
+
+                    Log.i("params", String.valueOf(json));
+
+
+                    Intent share = new Intent(Intent.ACTION_SEND);
+
+                    share.setType(type);
+
+
+                    Uri uri = Uri.fromFile(media);
+
+
+                    share.putExtra(Intent.EXTRA_STREAM, uri);
+
+
+                    startActivity(Intent.createChooser(share, "Share to"));
+
+
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e) {
+
+
+
+                    Snackbar snackbar = null;
+
+                    snackbar = Snackbar
+                            .make(relativeLayout, "Omne moment please" , Snackbar.LENGTH_LONG);
+                    snackbar.show();
+
+
+
+                }
+
+                @Override
+                public void onRetry(int retryNo) {
+
+
+                }
+
+            });
 
     }
 
 
-    public class TutsPlusBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
-        private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
+    private void checkguestIn() {
+
+
+
+
+        //java.util.concurrent.ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        executor.execute(new Runnable() {
 
             @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                    dismiss();
+            public void run() {
+
+                SyncHttpClient client = new SyncHttpClient();
+
+                client.setConnectTimeout(20000);
+
+                client.get("http://www.sinopiainn.com/api/images/", new JsonHttpResponseHandler() {
+
+                    @Override
+                    public void onStart() {
+
+
+                    }
+
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
+
+                        System.err.println("files got");
+
+
+                        files = json;
+
+
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e) {
+
+
+                        System.err.println("files terminated");
+
+                    }
+
+
+                });
+
+            }
+
+        });
+
+
+        //executor = Executors.newSingleThreadExecutor();
+
+        executor.submit(new Runnable() {
+
+
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            public void run() {
+
+                System.err.println("starting");
+
+
+
+                try {
+
+
+                    SyncHttpClient client = new SyncHttpClient();
+
+                    for (int l = 0; l < files.length(); l++) {
+
+                        JSONObject item = (JSONObject) files.get(l);
+
+
+                        StringBuilder builder = new StringBuilder();
+
+                        String WEB_SERVICE_URL = null;
+
+                        try {
+
+                            WEB_SERVICE_URL = builder.append("http://www.sinopiainn.com/").append(URLEncoder.encode(String.valueOf(item.get("image_url")), "utf-8")).toString();
+
+                        } catch (UnsupportedEncodingException e) {
+
+                            e.printStackTrace();
+                        }
+
+                        try {
+
+                            try (InputStream is = new URL(WEB_SERVICE_URL).openStream()) {
+
+                                final Bitmap bitmap = BitmapFactory.decodeStream(is);
+
+                                bitmapArray.add(bitmap);
+
+
+                            }
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
 
             }
 
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-            }
-        };
 
-        @Override
-        public void setupDialog(Dialog dialog, int style) {
+        });
 
-            super.setupDialog(dialog, style);
-
-            View contentView = View.inflate(getContext(), R.layout.fragment_bottom_sheet, null);
-
-            dialog.setContentView(contentView);
-
-            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) ((View) contentView.getParent()).getLayoutParams();
-
-            behavior = params.getBehavior();
+        executor.shutdown();
 
 
-
-            // overlay = (LinearLayout) contentView.findViewById(R.id.overlay);
-
-
-
-            mRecyclerView = (RecyclerView) contentView.findViewById(R.id.recycler);
-
-            mRecyclerView.setFadingEdgeLength(150);
-
-            // use this setting to improve performance if you know that changes
-            // in content do not change the layout size of the RecyclerView
-            mRecyclerView.setHasFixedSize(true);
-
-
-            mLayoutManager = new LinearLayoutManager(getActivity());
-
-
-            mRecyclerView.setLayoutManager(mLayoutManager);
-
-            mAdapter = new foodAdapter(getActivity(),menu);
-
-            // specify an adapter (see also next example)
-            // mAdapter = new foodAdapter(foods);
-
-            mRecyclerView.setAdapter(mAdapter);
-
-
-            if( behavior != null && behavior instanceof BottomSheetBehavior ) {
-                ((BottomSheetBehavior) behavior).setBottomSheetCallback(mBottomSheetBehaviorCallback);
-
-                ((BottomSheetBehavior) behavior).setPeekHeight(1200);
-
-            }
-        }
     }
+
 }

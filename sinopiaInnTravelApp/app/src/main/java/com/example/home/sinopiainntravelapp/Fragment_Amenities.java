@@ -1,6 +1,8 @@
 package com.example.home.sinopiainntravelapp;
 
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -41,6 +43,7 @@ public class Fragment_Amenities extends Fragment {
     }
 
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -63,7 +66,7 @@ public class Fragment_Amenities extends Fragment {
 
         mainImage = (ImageView) rootView.findViewById(R.id.image);
 
-        // mainImage.setImageBitmap(bitmapClass.decodeSampledBitmapFromResource(getResources(), R.drawable.breakfast, 100, 100));
+        mainImage.setImageBitmap(bitmapClass.decodeSampledBitmapFromResource(getResources(), R.drawable.breakfast, 100, 100));
 
         CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
 
@@ -73,7 +76,29 @@ public class Fragment_Amenities extends Fragment {
 
         collapsingToolbar.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
 
+if(((Activity_Home)getActivity()).itinerary.length() != 0 ){
 
+  JSONObject excursion  = new JSONObject();
+
+
+    try {
+
+        excursion.put("name", "Excursion");
+        excursion.put("description", "");
+        excursion.put("price", "10");
+        excursion.put("frequency", "distance");
+
+
+    } catch (JSONException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+
+
+    roomlist.add(excursion.toString());
+
+
+}
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {

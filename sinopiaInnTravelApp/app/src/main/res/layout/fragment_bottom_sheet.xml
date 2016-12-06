@@ -22,7 +22,7 @@
         android:id="@+id/recycler"
         android:scrollbars="vertical"
         android:layout_width="match_parent"
-        android:layout_height="238dp"
+        android:layout_height="wrap_content"
         android:paddingTop="3dp"
         android:paddingBottom="3dp"
         android:background="@android:color/black"
