@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -84,7 +85,7 @@ public class Activity_CheckIn extends AppCompatActivity {
 
     private FrameLayout mViewPager;
 
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int REQUEST_IMAGE_CAPTURE = 2;
 
     ImageView overlay_close;
 
@@ -112,7 +113,7 @@ public class Activity_CheckIn extends AppCompatActivity {
     JSONArray timelinefiles ;
 
     ArrayList<String> reservationsContainer ;
-    RelativeLayout relativeLayout;
+    CoordinatorLayout relativeLayout;
     Thread getBitmaps;
     Thread getGuestBitmaps;
 
@@ -162,11 +163,13 @@ Bitmap bitmap;
 
         settings = getSharedPreferences(PREFS_NAME_1, 0);
 
-        name = builder.append(settings.getString("fname", "")).append(" ").append(settings.getString("lname", "")).toString();
+        name = builder.append(settings.getString("fname","")).append(" ").append(settings.getString("lname","")).toString();
 
-        fname= settings.getString("fname", "");
+        Log.i("name",name);
 
-        lname= settings.getString("lname", "");
+        fname= settings.getString("fname","");
+
+        lname= settings.getString("lname","");
 
         random = new Random();
 
@@ -188,11 +191,11 @@ Bitmap bitmap;
 
         Fragment_Confirmation openingFragment = new Fragment_Confirmation();
 
-        bundle.putString("fname",settings.getString("fname", ""));
+        bundle.putString("fname",settings.getString("fname",""));
 
-        bundle.putString("lname",settings.getString("lname", ""));
+        bundle.putString("lname",settings.getString("lname",""));
 
-        bundle.putString("fromdate",settings.getString("fromdate", ""));
+        bundle.putString("fromdate",settings.getString("fromdate",""));
 
         bundle.putString("todate",settings.getString("todate", ""));
 
@@ -208,7 +211,7 @@ Bitmap bitmap;
 
         mViewPager = (FrameLayout) findViewById(R.id.container);
 
-        getGuestAlbum();
+
 
         executor = Executors.newSingleThreadExecutor();
 
@@ -221,7 +224,7 @@ Bitmap bitmap;
 
         todate = settings.getString("todate", "");
 
-        relativeLayout = (RelativeLayout) findViewById(R.id.relativeLay);
+        relativeLayout = (CoordinatorLayout) findViewById(R.id.frameLayout);
 
         reservationsContainer = getIntent().getStringArrayListExtra("timeline");
 
@@ -376,7 +379,7 @@ Bitmap bitmap;
 
                     if(reservationsContainer.size() == 0 ) {
 
-                        getGuestAlbum();
+
 
                         goToTimeline();
 
@@ -478,11 +481,6 @@ Bitmap bitmap;
         }
 
 
-
-
-    }
-
-    private void getGuestAlbum() {
 
 
     }
@@ -617,29 +615,36 @@ Bitmap bitmap;
 
     public void onBraintreeSubmit() {
 
-
+        //Log.i();
         RequestParams params = new RequestParams();
+
         try {
 
-        for(int x = 0; x < itinerary.length() ; x++) {
 
+        for(int x = 0; x < itinerary.length() ; x++) {
 
 
                 params.put("places[]", String.valueOf(itinerary.get(x)));
 
 
         }
+
         } catch (JSONException e) {
+
+
             e.printStackTrace();
+
         }
 
         params.put("token",settings.getString("token", ""));
+
+        params.put("name",name);
 
         client = new AsyncHttpClient();
 
         client.setConnectTimeout(20000);
 
-        client.post("http://www.sinopiainn.com/api/business-rates/", params , new JsonHttpResponseHandler() {
+        client.post("/api/mobile/booktrip/", params , new JsonHttpResponseHandler() {
 
             @Override
             public void onStart() {
@@ -654,12 +659,15 @@ Bitmap bitmap;
                 Snackbar snackbar = null;
 
                 try {
-                    snackbar = Snackbar
-                            .make(relativeLayout, String.valueOf(json.get("ERROR")), Snackbar.LENGTH_LONG);
+
+                    snackbar = Snackbar.make(relativeLayout, String.valueOf(json.get("ERROR")), Snackbar.LENGTH_LONG);
+
                     snackbar.show();
 
                 } catch (JSONException e) {
+
                     e.printStackTrace();
+
                 }
 
 
@@ -670,16 +678,19 @@ Bitmap bitmap;
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e)  {
 
-                Snackbar snackbar = Snackbar
-                        .make(relativeLayout, "Processing your payment", Snackbar.LENGTH_LONG);
+
+                Snackbar snackbar = Snackbar.make(relativeLayout, "Processing your payment", Snackbar.LENGTH_LONG);
 
                 snackbar.show();
+
             }
 
             @Override
             public void onRetry(int retryNo) {
 
+
             }
+
 
         });
 
@@ -708,7 +719,7 @@ Bitmap bitmap;
 
             }
 
-        }else{
+        }else if (requestCode == 2 && resultCode == RESULT_OK){
 
 
                 galleryAddPic();
@@ -780,7 +791,22 @@ Bitmap bitmap;
                         break;
                     case 3:
 
-                        menubitmapArray  = new ArrayList<>();
+
+
+                        Fragment_Food new_fragment = new Fragment_Food();
+
+                        bundle.putInt("Activity", 1);
+
+                        bundle.putString("Json", json.toString());
+
+                        bundle.putInt("Menu", position);
+
+                        new_fragment.setArguments(bundle);
+
+                        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container,new_fragment).addToBackStack(null).commit();
+
+
+                      /*  menubitmapArray  = new ArrayList<>();
 
                         new Thread() {
                             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -860,7 +886,7 @@ Bitmap bitmap;
 
                         }.start();
 
-
+*/
 
 
 
@@ -868,32 +894,183 @@ Bitmap bitmap;
                         break;
                     case 4:
 
-                        JsonBusinesses = json;
+                        Fragment_Food_Category_List travel = new Fragment_Food_Category_List();
+
+                        Bundle bundle1 = new Bundle();
+
+                        String jsonString = "[\n" +
+                                "\n" +
+                                "{\n" +
+                                "    \n" +
+                                "\"name\":\"test\",\n" +
+                                "\"description\":\"test\",\n" +
+                                "\"image_url\":\"\",\n" +
+                                "\"location\":\"portland\",\n" +
+                                "\n" +
+                                "},{\n" +
+                                "    \n" +
+                                "\"name\":\"test\",\n" +
+                                "\"description\":\"test\",\n" +
+                                "\"image_url\":\"\",\n" +
+                                "\"location\":\"portland\",\n" +
+                                "\n" +
+                                "},{\n" +
+                                "    \n" +
+                                "\"name\":\"test\",\n" +
+                                "\"description\":\"test\",\n" +
+                                "\"image_url\":\"\",\n" +
+                                "\"location\":\"portland\",\n" +
+                                "\n" +
+                                "},{\n" +
+                                "    \n" +
+                                "\"name\":\"test\",\n" +
+                                "\"description\":\"test\",\n" +
+                                "\"image_url\":\"\",\n" +
+                                "\"location\":\"portland\",\n" +
+                                "\n" +
+                                "},\n" +
+                                "\n" +
+                                "\n" +
+                                "]";
+                        bundle1.putString("List",jsonString);
+
+                        bundle1.putInt("Activity", 1);
+
+                        bundle1.putInt("Menu",4);
+
+                        travel.setArguments(bundle1);
+
+
+                        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container,travel).addToBackStack(null).commit();
+
+
+
+
+                       /* JsonBusinesses = json;
 
                         Fragment_Travel_Planner travel =  new Fragment_Travel_Planner() ;
+
+                        bundle.putInt("Activity", 1);
+
+                        bundle.putInt("Menu", position);
 
                         travel.setArguments(bundle);
 
 
                         getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out).replace(R.id.container,travel).addToBackStack(null).commit();
 
-
+*/
                         break;
                     case 5:
 
+                       /* menubitmapArray  = new ArrayList<>();
 
-                        Fragment_Photos bookShelf =  new Fragment_Photos() ;
+                        new Thread() {
+                            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                            public void run() {
+
+
+                                for (int i = 0; i < json.length(); i++) {
+
+
+                                    JSONObject item = null;
+                                    try {
+                                        item = (JSONObject) json.get(i);
+
+                                        final JSONObject firstItem  =  (JSONObject) item.getJSONArray("items").get(0);
+
+                                        try {
+
+                                            try ( InputStream is = new URL(firstItem.getString("image_url").replaceAll(" ", "%20")).openStream() ) {
+
+                                                final Bitmap bitmap = BitmapFactory.decodeStream( is );
+
+                                                menubitmapArray.add(bitmap);
+
+
+
+
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+
+                                        } catch (IOException e) {e.printStackTrace();
+
+
+                                        }
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+
+
+
+
+
+
+
+
+                                }
+
+
+
+                                runOnUiThread(new Runnable() {
+
+                                    @Override
+                                    public void run() {
+
+
+                                        Fragment_Photos new_fragment =  new Fragment_Photos() ;
+
+                                        Bundle bundle = new Bundle ();
+
+                                        bundle.putInt("Activity", 1);
+
+                                        bundle.putInt("Menu", position);
+
+                                        bundle.putString("Json", json.toString());
+
+                                        new_fragment.setArguments(bundle);
+
+                                        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container,new_fragment).addToBackStack(null).commit();
+
+
+                                    }
+                                });
+
+                            }
+
+                        }.start();*/
+
+                        new_fragment = new Fragment_Food();
+
+                        bundle.putInt("Activity", 1);
+
+                        bundle.putString("Json", json.toString());
+
+                        bundle.putInt("Menu", position);
+
+                        new_fragment.setArguments(bundle);
+
+                        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container,new_fragment).addToBackStack(null).commit();
+
+
+
+
+                       /* Fragment_Photos bookShelf =  new Fragment_Photos() ;
 
                         bundle.putInt("Activity", 1);
 
                         bundle.putInt("Menu", position);
 
+                        Log.i("Json",json.toString());
                         bundle.putString("Json",  json.toString());
 
                         bookShelf.setArguments(bundle);
 
                         getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, bookShelf).addToBackStack(null).commit();
-
+*/
 
 
                         break;
@@ -954,6 +1131,45 @@ Bitmap bitmap;
 
     }
 
+    public void tripPlanner(final String location) {
+
+        final JSONArray businessLocation = null;
+
+
+        String WEB_SERVICE_URL = "http://www.sinopiainn.com/api/businesses";
+
+        client = new AsyncHttpClient();
+
+        client.setConnectTimeout(20000);
+
+        client.get(WEB_SERVICE_URL, new JsonHttpResponseHandler() {
+
+            @Override
+            public void onStart() {
+                // called before request is started
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
+
+                new MyAsyncTask(json,location).execute();
+
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e)  {
+
+
+            }
+            @Override
+            public void onRetry(int retryNo) {
+
+            }
+        });
+
+
+    }
 
 
     public Boolean checkItinerary(String businessname) throws JSONException {
@@ -988,7 +1204,6 @@ Bitmap bitmap;
 
     }
 
-    static final int REQUEST_TAKE_PHOTO = 1;
 
     private void dispatchTakePictureIntent() {
 
@@ -1040,8 +1255,11 @@ Bitmap bitmap;
 
 
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(mCurrentPhotoPath);
-        Uri contentUri = Uri.fromFile(f);
+       media = new File(mCurrentPhotoPath);
+
+
+
+        Uri contentUri = Uri.fromFile(media);
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
 
@@ -1137,17 +1355,97 @@ Bitmap bitmap;
 
 
 
+    private class MyAsyncTask extends AsyncTask<Object, Object, JSONArray>
+
+    {
+
+
+        JSONArray businesses = null;
+
+        String businesslocation = null;
+
+        JSONArray businessLocation  = new JSONArray();
+
+
+        public MyAsyncTask(JSONArray json, String location) {
+
+            businesses = json;
+
+            businesslocation = location;
+
+
+        }
+
+
+        @Override
+        protected JSONArray doInBackground(Object... params) {
+
+
+            try {
+
+
+
+                for(int i = 0 ; i <  businesses.length(); i++ ) {
+
+
+                    final JSONObject businessObject  = (JSONObject)  businesses.get(i) ;
+
+
+                    if(businessObject.getString("location").equals(businesslocation) ){
+
+
+                        businessLocation.put(businessObject);
+
+
+
+                    }
+
+
+
+                }
+
+                /// JsonBusinesses = json;
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+
+            return businessLocation;
+        }
+        @Override
+        protected void onPostExecute(JSONArray result) {
+
+
+            Fragment_Travel_Planner travel = new Fragment_Travel_Planner();
+
+            bundle.putInt("Activity", 0);
+
+            JsonBusinesses = result;
+
+            bundle.putString("Json", result.toString());
+
+            travel.setArguments(bundle);
+
+            getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, travel ).addToBackStack(null).commit();
+
+
+
+        }
+    }
     public void uploadImageToTimeline(String msg, String address) {
 
 
 
         client = new AsyncHttpClient();
 
-        client.setConnectTimeout(100000);
+        client.setConnectTimeout(10000000);
 
 
         RequestParams params = new RequestParams();
 
+Log.i("media", String.valueOf(media));
 
             if (media != null) {
 
@@ -1169,72 +1467,109 @@ Bitmap bitmap;
         try {
 
 
-            WEB_SERVICE_URL = builder.append("http://www.sinopiainn.com/api/upload-reservation-photo?resID=")
-                    .append(settings.getString("reservationID", ""))
-                    .append("&message=").append(URLEncoder.encode(msg, "utf-8"))
-                    .append("&address=").append(URLEncoder.encode(address, "utf-8")).toString();
+            name = name.replaceFirst("\\s++$", "");
 
+
+            WEB_SERVICE_URL = builder.append("http://www.sinopiainn.com/api/upload-reservation-photo?resID=").append(settings.getString("reservationID", "")).append("&name=").append(URLEncoder.encode(name, "utf-8")).append("&message=").append(URLEncoder.encode(msg, "utf-8")).toString();
+
+            Log.i("WEB_SERVICE_URL",WEB_SERVICE_URL);
 
         } catch (UnsupportedEncodingException e) {
 
             e.printStackTrace();
         }
 
+try {
+
+    client.post(WEB_SERVICE_URL, params, new JsonHttpResponseHandler() {
+
+        @Override
+        public void onStart() {
 
 
-        client.post(WEB_SERVICE_URL, params, new JsonHttpResponseHandler() {
+        }
 
-                @Override
-                public void onStart() {
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
 
+            Log.i("params", String.valueOf(json));
 
-                }
+            getSupportFragmentManager().popBackStack();
 
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
 
-                    Log.i("params", String.valueOf(json));
-
-
-                    Intent share = new Intent(Intent.ACTION_SEND);
-
-                    share.setType(type);
+            shareIntent.setType(type);
 
 
-                    Uri uri = Uri.fromFile(media);
+            Uri uri = Uri.fromFile(media);
 
 
-                    share.putExtra(Intent.EXTRA_STREAM, uri);
+            //shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
 
 
-                    startActivity(Intent.createChooser(share, "Share to"));
+            //startActivity(Intent.createChooser(share, "Share to"));
+            try {
+                if(json.get("ERROR").toString().equals(""))
+                {
 
+                    try {
 
-                }
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(MediaStore.Images.Media
+                                .insertImage(getContentResolver(), media.getAbsolutePath(), "test", "test")));
 
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e) {
+                    } catch (FileNotFoundException e) {
 
+                        e.printStackTrace();
 
+                    }
+
+                    shareIntent.setType("image/jpeg");
+
+                    startActivity(Intent.createChooser(shareIntent,"Share to"));
+
+                }else{
 
                     Snackbar snackbar = null;
 
                     snackbar = Snackbar
-                            .make(relativeLayout, "Omne moment please" , Snackbar.LENGTH_LONG);
+                            .make(relativeLayout, json.get("ERROR").toString() , Snackbar.LENGTH_LONG);
                     snackbar.show();
 
 
 
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
-                @Override
-                public void onRetry(int retryNo) {
+
+        }
+
+        @Override
+        public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e) {
 
 
-                }
+            Snackbar snackbar = null;
 
-            });
+            snackbar = Snackbar
+                    .make(relativeLayout, "One moment please", Snackbar.LENGTH_LONG);
+            snackbar.show();
 
+
+        }
+
+        @Override
+        public void onRetry(int retryNo) {
+
+
+        }
+
+    });
+
+} catch (Exception e) {
+    e.printStackTrace();
+
+}
     }
 
 
@@ -1316,14 +1651,12 @@ Bitmap bitmap;
 
                         String WEB_SERVICE_URL = null;
 
-                        try {
+                            WEB_SERVICE_URL = item.get("image_url").toString();
 
-                            WEB_SERVICE_URL = builder.append("http://www.sinopiainn.com/").append(URLEncoder.encode(String.valueOf(item.get("image_url")), "utf-8")).toString();
+                            Log.i("WEB_SERVICE_URL",WEB_SERVICE_URL);
 
-                        } catch (UnsupportedEncodingException e) {
 
-                            e.printStackTrace();
-                        }
+
 
                         try {
 
@@ -1333,7 +1666,7 @@ Bitmap bitmap;
 
                                 bitmapArray.add(bitmap);
 
-
+                                System.err.println("bitmapArray");
                             }
 
                         } catch (IOException e) {

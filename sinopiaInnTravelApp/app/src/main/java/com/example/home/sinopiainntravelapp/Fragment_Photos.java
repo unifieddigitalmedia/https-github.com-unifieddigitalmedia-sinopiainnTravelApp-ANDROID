@@ -3,18 +3,24 @@ package com.example.home.sinopiainntravelapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -125,9 +131,59 @@ public class Fragment_Photos extends Fragment {
 
                 }else {
 
-                    ImageItem item = (ImageItem) parent.getItemAtPosition(position);
+                    final ImageItem item = (ImageItem) parent.getItemAtPosition(position);
 
-                    Fragment_Photos_Pager new_fragment = new Fragment_Photos_Pager();
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setPositiveButton("", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    }).setNegativeButton("", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+
+                    final AlertDialog dialog = builder.create();
+
+                    //LayoutInflater inflater = getLayoutInflater();
+
+                    LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+
+                    View dialogLayout = inflater.inflate(R.layout.go_pro_dialog_layout, null);
+
+                    dialog.setView(dialogLayout);
+
+                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+                    dialog.show();
+
+                    Log.i("item.getImage()", String.valueOf(item.getImage()));
+
+                    dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                        @Override
+                        public void onShow(DialogInterface d) {
+
+                            ImageView image = (ImageView) dialog.findViewById(R.id.goProDialogImage);
+
+                            Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(),
+                                    R.drawable.logo);
+
+                            image.setImageBitmap(item.getImage());
+
+
+                            float imageWidthInPX = (float)image.getWidth();
+
+                            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(Math.round(imageWidthInPX),
+                                    Math.round(imageWidthInPX * (float)icon.getHeight() / (float)icon.getWidth()));
+                            image.setLayoutParams(layoutParams);
+
+
+                        }
+                    });
+
+                  /*  Fragment_Photos_Pager new_fragment = new Fragment_Photos_Pager();
 
                     Bundle bundle1 = new Bundle();
 
@@ -137,7 +193,7 @@ public class Fragment_Photos extends Fragment {
 
                     new_fragment.setArguments(bundle1);
 
-                    ((Activity_CheckIn) getActivity()).homePageFadeTransition(new_fragment, "");
+                    ((Activity_CheckIn) getActivity()).homePageFadeTransition(new_fragment, "");*/
 
                 }
 
@@ -176,6 +232,10 @@ public class Fragment_Photos extends Fragment {
 
 
             if(((Activity_CheckIn) getActivity()).executor.isTerminated()){
+
+
+                Log.i("terminated", String.valueOf(((Activity_CheckIn) getActivity()).bitmapArray));
+
 
                 for (int i = 0; i <  ((Activity_CheckIn) getActivity()).bitmapArray.size(); i++) {
 

@@ -10,10 +10,13 @@
     <android.support.design.widget.CoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.design.widget.AppBarLayout
+
+
+      <!--  <android.support.design.widget.AppBarLayout
             android:id="@+id/viewA"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -55,7 +58,7 @@
                     />
             </android.support.design.widget.CollapsingToolbarLayout>
 
-        </android.support.design.widget.AppBarLayout>
+        </android.support.design.widget.AppBarLayout> -->
 
 
 
@@ -270,6 +273,7 @@
                         <ImageView
                             android:id="@+id/effect_mean_remove"
                             android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:onClick="buttonClicked"
                              />
                         <!--<ImageView-->
@@ -361,6 +365,77 @@
 
                 </HorizontalScrollView>
 
+
+                <RelativeLayout
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="72dp">
+
+                    <RelativeLayout
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:layout_weight="1"
+                        android:layout_margin="5dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:id="@+id/innerContainer"
+                        >
+
+
+                        <ImageView
+                            android:id="@+id/image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentLeft="true"
+
+                            android:layout_centerVertical="true"
+                            android:scaleType="fitCenter"
+                            />
+
+
+                    </RelativeLayout>
+
+
+                    <LinearLayout
+                        android:id="@+id/form"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:orientation="horizontal"
+                        android:paddingBottom="2dp"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+
+                        android:layout_toRightOf="@+id/innerContainer"
+
+                        >
+
+
+                        <EditText
+                            android:id="@+id/title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignTop="@+id/button1"
+                            android:layout_toLeftOf="@+id/sendMessageButton"
+                            android:layout_weight="0.72"
+                            android:ems="10"
+                            
+                            android:textSize="16dp"
+                            android:hint="Write A Comment :"/>
+
+
+
+                    </LinearLayout>
+
+
+
+
+                </RelativeLayout>
+
                 <android.support.design.widget.TextInputLayout
 
                     android:layout_width="match_parent"
@@ -382,42 +457,22 @@
                 </android.support.design.widget.TextInputLayout>
 
 
-            <LinearLayout
-                android:id="@+id/form"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:background="#91f1f1f1"
-                android:orientation="horizontal"
-                android:paddingBottom="2dp"
-                android:layout_marginTop="5dp">
-
-
-                <EditText
-                    android:id="@+id/title"
-                    android:layout_width="252dp"
+                <Button
+                    android:paddingTop="10dp"
+                    android:paddingBottom="15dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:textColor="@color/colorSecondary"
+                    android:background="@drawable/transparent_solid_with_primary_border"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignTop="@+id/button1"
-                    android:layout_toLeftOf="@+id/sendMessageButton"
-                    android:layout_weight="0.72"
-                    android:ems="10"
-                    android:maxHeight="80dp"
-                    android:textSize="16dp"
-                    android:hint="Write A Comment :"/>
-
-                <ImageButton
                     android:id="@+id/continueBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentRight="true"
-                    android:background="@drawable/send_button"
-                    android:text="d" />
-            </LinearLayout>
+                    android:text="Continue"
+
+                    />
 
             </LinearLayout>
+
         </android.support.v4.widget.NestedScrollView>
 
 

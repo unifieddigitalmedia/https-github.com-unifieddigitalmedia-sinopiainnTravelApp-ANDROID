@@ -119,14 +119,14 @@ public class Fragment_Confirmation extends Fragment {
 
         ndate = formatter.format(date);
 
-
         toDate.setText( ndate);
+
+        //guestNme.append("Welcome").append(" ").append(((Activity_CheckIn) getActivity()).fname).append(" ").append(((Activity_CheckIn) getActivity()).lname);
 
         guestNme.append("Welcome").append(" ").append(((Activity_CheckIn) getActivity()).fname).append(" ").append(((Activity_CheckIn) getActivity()).lname);
 
+
         collapsingToolbar.setTitle(guestNme);
-
-
 
         collapsingToolbar.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar);
 

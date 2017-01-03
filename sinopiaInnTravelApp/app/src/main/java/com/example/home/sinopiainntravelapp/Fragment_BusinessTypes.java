@@ -143,6 +143,13 @@ public class Fragment_BusinessTypes extends Fragment {
         mRecyclerView.addItemDecoration(itemDecoration);
 
 
+        ScaleBitMaps bitmapClass = new ScaleBitMaps(getActivity());
+
+        ImageView image = (ImageView) rootView.findViewById(R.id.image);
+
+        bitmapClass = new ScaleBitMaps(getActivity());
+
+        image.setImageBitmap(bitmapClass.decodeSampledBitmapFromResource(getResources(),R.drawable.jamaica_map_800, 100, 100));
 
 
 

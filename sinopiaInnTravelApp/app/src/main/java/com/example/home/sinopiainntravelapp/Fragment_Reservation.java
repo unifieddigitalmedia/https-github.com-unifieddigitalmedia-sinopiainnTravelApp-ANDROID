@@ -11,7 +11,6 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.CardView;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -357,7 +356,6 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
 
         scrollView = (NestedScrollView) rootView.findViewById(R.id.scrollView);
 
-
         numofadult = (TextView) rootView.findViewById(R.id.numofadult);
 
         numofchildren = (TextView) rootView.findViewById(R.id.numofchildren);
@@ -423,7 +421,6 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
 
                 if(((Activity_Home) getActivity()).num_of_infants != 10) {
 
-                    ((Activity_Home) getActivity()).numf_of_guest  = ((Activity_Home) getActivity()).numf_of_guest+ 1;
 
                     ((Activity_Home) getActivity()).num_of_infants = ((Activity_Home) getActivity()).num_of_infants + 1;
 
@@ -762,7 +759,8 @@ public class Fragment_Reservation extends Fragment implements AdapterView.OnItem
                                             StringBuilder builder = new StringBuilder();
 
                                             String WEB_SERVICE_URL = builder.append("http://www.sinopiainn.com/api/checkhotelavailability/?fromdate=").append(((Activity_Home) getActivity()).fromdate).append("&todate=").append(((Activity_Home) getActivity()).todate).append("&promo=").append(promo.getText().toString()).append("&nights=").append(((Activity_Home) getActivity()).num_of_days).toString();
-    Log.i("WEB_SERVICE_URL",WEB_SERVICE_URL);
+
+
                                             checkAvilabilty(WEB_SERVICE_URL);
 
 

@@ -14,16 +14,14 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -52,6 +50,7 @@ public class Fragment_Photos_Big extends Fragment {
     int BitmapSize = 30;
     int width, height;
     BitmapDrawable drawable;
+    Bitmap bmp;
     String type = "image/*";
     String filename = "/myPhoto.jpg";
     String mediaPath;
@@ -89,24 +88,24 @@ public class Fragment_Photos_Big extends Fragment {
     ImageView effect_tint;
     ImageView effect_watermark ;
 
-
+    FileOutputStream fos;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment__photos, container, false);
 
-        CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
+        /*CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
 
         collapsingToolbar.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar);
 
-        collapsingToolbar.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
+        collapsingToolbar.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);*/
 
         imageView = (ImageView) rootView.findViewById(R.id.image);
 
         titleTextView = (EditText) rootView.findViewById(R.id.title);
 
-        effect_black = (ImageView) rootView.findViewById(R.id.effect_black);
+       /* effect_black = (ImageView) rootView.findViewById(R.id.effect_black);
         effect_boost_1 = (ImageView) rootView.findViewById(R.id.effect_boost_1);
         effect_boost_2 = (ImageView) rootView.findViewById(R.id.effect_boost_2);
         effect_boost_3 = (ImageView) rootView.findViewById(R.id.effect_boost_3);
@@ -136,7 +135,7 @@ public class Fragment_Photos_Big extends Fragment {
         effect_sheding_yellow = (ImageView) rootView.findViewById(R.id.effect_sheding_yellow);
         effect_sheding_green = (ImageView) rootView.findViewById(R.id.effect_sheding_green);
         effect_tint = (ImageView) rootView.findViewById(R.id.effect_tint);
-        effect_watermark  = (ImageView) rootView.findViewById(R.id.effect_watermark);
+        effect_watermark  = (ImageView) rootView.findViewById(R.id.effect_watermark);*/
 
         location = (EditText) rootView.findViewById(R.id.promo);
 
@@ -181,7 +180,7 @@ public class Fragment_Photos_Big extends Fragment {
 
             imageView.setImageBitmap(bitmap);
 
-            effect_black.setImageBitmap(bitmap);
+            /*effect_black.setImageBitmap(bitmap);
             effect_boost_1.setImageBitmap(bitmap);
             effect_boost_2.setImageBitmap(bitmap);
             effect_boost_3.setImageBitmap(bitmap);
@@ -209,7 +208,7 @@ public class Fragment_Photos_Big extends Fragment {
             effect_sheding_yellow.setImageBitmap(bitmap);
             effect_sheding_green.setImageBitmap(bitmap);
             effect_tint.setImageBitmap(bitmap);
-            effect_watermark.setImageBitmap(bitmap);
+            effect_watermark.setImageBitmap(bitmap);*/
 
 
             drawable = (BitmapDrawable) imageView.getDrawable();
@@ -231,7 +230,7 @@ public class Fragment_Photos_Big extends Fragment {
 
         }
 
-        ImageButton next = (ImageButton) rootView.findViewById(R.id.continueBtn);
+        Button next = (Button) rootView.findViewById(R.id.continueBtn);
 
         next.setOnClickListener(new View.OnClickListener() {
 
@@ -242,15 +241,18 @@ public class Fragment_Photos_Big extends Fragment {
 
 
 
+
                 // mediaPath = photoFile.getAbsolutePath();
 
                 //createInstagramIntent(type, mediaPath);
 
                 // galleryAddPic();
 
-                ((Activity_CheckIn) getActivity()).media = f;
+                saveBitmap(bmp,"effect_watermark");
 
-                ((Activity_CheckIn) getActivity()).uploadImageToTimeline(((Activity_CheckIn) getActivity()).message,((Activity_CheckIn) getActivity()).location);
+
+
+                ((Activity_CheckIn) getActivity()).uploadImageToTimeline(titleTextView.getText().toString(),((Activity_CheckIn) getActivity()).location);
 
 
 
@@ -302,7 +304,7 @@ public class Fragment_Photos_Big extends Fragment {
     public void DrawCanvas() {
 
         Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
-        Bitmap bmp = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), conf);
+        bmp = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), conf);
         //canvas = new Canvas(drawable.getBitmap());
 
         canvas = new Canvas(bmp);
@@ -413,7 +415,7 @@ public class Fragment_Photos_Big extends Fragment {
     }
 
 
-    public void buttonClicked(View v){
+  /*  public void buttonClicked(View v){
 
         Toast.makeText(getActivity(),"Processing...",Toast.LENGTH_SHORT).show();
 
@@ -485,20 +487,54 @@ public class Fragment_Photos_Big extends Fragment {
             saveBitmap(imgFilter.applyWaterMarkEffect(bitmap, "kpbird.com", 200, 200, Color.GREEN, 80, 24, false),"effect_watermark");
 
     }
-
+*/
     private void saveBitmap(Bitmap bmp,String fileName){
         try {
 
 
+
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String imageFileName = fileName+"_"+"JPEG_" + timeStamp + "_";
+            File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            File image = File.createTempFile(
+                    imageFileName,
+                    ".jpg",
+                    storageDir
+            );
+
             imageView.setImageBitmap(bmp);
 
-            f = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + fileName+".png");
-
-            FileOutputStream fos = new FileOutputStream(f);
-
-            bmp.compress(Bitmap.CompressFormat.PNG,90,fos);
 
 
+            //f = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + fileName+".png");
+
+
+            f = new File(image.getAbsolutePath());
+
+
+            try {
+                 fos = new FileOutputStream(f);
+
+                // Use the compress method on the BitMap object to write image to the OutputStream
+                bmp.compress(Bitmap.CompressFormat.JPEG,90,fos);
+
+
+                ((Activity_CheckIn) getActivity()).media = f;
+
+
+
+
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
         }
         catch(Exception ex){

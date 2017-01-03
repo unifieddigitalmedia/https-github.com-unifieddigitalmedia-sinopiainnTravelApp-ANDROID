@@ -5,13 +5,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginBottom="5dp"
+    android:weightSum="1"
 
     xmlns:tools="http://schemas.android.com/tools">
 
     <android.support.design.widget.AppBarLayout
+        android:layout_weight="0.25"
         android:id="@+id/toolBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="350dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
 
@@ -58,6 +61,7 @@
         android:orientation="vertical"
         android:paddingTop="24dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_weight="0.75"
         android:weightSum="1">
 
         <android.support.v7.widget.RecyclerView

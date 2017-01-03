@@ -19,7 +19,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -78,6 +81,8 @@ public class Fragment_Food extends Fragment {
 
         fab.getDrawable().mutate().setTint(ContextCompat.getColor(getActivity(), android.R.color.white));
 
+
+
         if(getArguments().getInt("Menu") == 0){
 
 
@@ -95,6 +100,8 @@ public class Fragment_Food extends Fragment {
 
         }else if (getArguments().getInt("Menu") == 6) {
 
+
+            Log.i("MENU ITEM", String.valueOf(getArguments().getInt("Menu")));
 
             fab.setImageResource(R.drawable.ic_edit_black_24dp);
 
@@ -146,14 +153,21 @@ public class Fragment_Food extends Fragment {
 
         mainImage = (ImageView) rootView.findViewById(R.id.image);
 
-        if(getArguments().getInt("Menu") != 2 ) {
+        if(getArguments().getInt("Menu") == 2 || getArguments().getInt("Menu") ==  3) {
 
             mainImage.setImageBitmap(bitmapClass.decodeSampledBitmapFromResource(getResources(), R.drawable.chef, 100, 100));
 
-        }else{
+        }else if(getArguments().getInt("Menu") == 5 ){
+
+            mainImage.setImageBitmap(bitmapClass.decodeSampledBitmapFromResource(getResources(), R.drawable.bookshelf, 100, 100));
 
 
-            mainImage.setImageBitmap(bitmapClass.decodeSampledBitmapFromResource(getResources(), R.drawable.chef, 100, 100));
+
+        }
+        else if(getArguments().getInt("Menu") == 6 ){
+
+
+            mainImage.setImageBitmap(bitmapClass.decodeSampledBitmapFromResource(getResources(), R.drawable.blue_mountains, 100, 100));
 
         }
 
@@ -212,6 +226,10 @@ public class Fragment_Food extends Fragment {
             public ImageView mImageView ;
             public ImageView rating1,rating2,rating3,rating4,rating5 ;
 
+            RelativeLayout overlay;
+
+            CircularProgressView progressView;
+
 
             public ViewHolder(View itemView) {
 
@@ -223,9 +241,16 @@ public class Fragment_Food extends Fragment {
 
                     mTextView = (TextView) itemView.findViewById(R.id.foodName);
 
+
                     mImageView = (ImageView) itemView.findViewById(R.id.placeHolder);
 
+                    progressView = (CircularProgressView) itemView.findViewById(R.id.progress_view);
 
+                    overlay = (RelativeLayout) itemView.findViewById(R.id.overlay);
+
+                    overlay.setVisibility(View.VISIBLE);
+
+                    progressView.startAnimation();
 
                 }else{
 
@@ -273,7 +298,6 @@ public class Fragment_Food extends Fragment {
 
                     try {
 
-
                         JSONObject f = (JSONObject) foodDataset.get(getLayoutPosition());
 
                         JSONArray list = new JSONArray(f.getString("items"));
@@ -288,13 +312,11 @@ public class Fragment_Food extends Fragment {
 
                     bundle1.putInt("Activity", getArguments().getInt("Activity"));
 
+                    Log.i("MENU ITEM", String.valueOf(getArguments().getInt("Menu")));
+
                     bundle1.putInt("Menu", getArguments().getInt("Menu"));
 
                     new_fragment.setArguments(bundle1);
-
-
-
-                    //
 
                     if(getArguments().getInt("Activity") == 0){
 
@@ -413,6 +435,10 @@ public class Fragment_Food extends Fragment {
 
 
                                                 holder.mImageView.setImageBitmap(bitmap);
+
+                                                holder.overlay.setVisibility(View.GONE);
+
+                                                holder.progressView.stopAnimation();
 
                                             }
                                         });

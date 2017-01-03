@@ -12,7 +12,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -120,6 +123,9 @@ public class Fragment_Bookshelf extends Fragment {
 
         private JSONArray foodDataset;
         private Random mRandom = new Random();
+        RelativeLayout overlay;
+
+        CircularProgressView progressView;
 
         public  class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
             // each data item is just a string in this case
@@ -138,6 +144,16 @@ public class Fragment_Bookshelf extends Fragment {
                 mTextView = (TextView) itemView.findViewById(R.id.foodName);
 
                 mImageView = (ImageView) itemView.findViewById(R.id.placeHolder);
+
+
+                progressView = (CircularProgressView) itemView.findViewById(R.id.progress_view);
+
+                overlay = (RelativeLayout) itemView.findViewById(R.id.overlay);
+
+                overlay.setVisibility(View.VISIBLE);
+
+                progressView.startAnimation();
+
 
             }
 

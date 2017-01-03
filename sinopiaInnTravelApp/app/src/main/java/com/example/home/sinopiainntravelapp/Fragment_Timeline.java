@@ -75,11 +75,17 @@ public class Fragment_Timeline extends Fragment {
 
         rooms = getArguments().getStringArrayList("photo_files"); //getString("photo_files"));
 
+
         JSONObject room = null;
+
         try {
             room = new JSONObject(rooms.get(0));
 
+
             bitmaps = new ArrayList<String>(Arrays.asList(room.getString("BITMAPS").substring(1, room.getString("BITMAPS").length()-1).split(","))) ;
+
+
+
 
             new Thread() {
                 @RequiresApi(api = Build.VERSION_CODES.KITKAT)

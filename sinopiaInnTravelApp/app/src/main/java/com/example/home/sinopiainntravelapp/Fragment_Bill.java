@@ -161,7 +161,7 @@ public class Fragment_Bill extends Fragment {
                                 case 0:
 
 
-                                    ((Activity_Home) getActivity()).setreservationTotal(num_of_days * Double.parseDouble(f.getString("price")));
+                                    ((Activity_Home) getActivity()).setreservationTotal(((Activity_Home) getActivity()).numf_of_guest * num_of_days * Double.parseDouble(f.getString("price")));
 
                                     break;
 
@@ -412,7 +412,7 @@ public class Fragment_Bill extends Fragment {
                     case 0:
 
 
-                        holder.amount.setText("USD " + String.valueOf((int) (((Activity_Home) getActivity()).num_of_days * Double.parseDouble(f.getString("price")))));
+                        holder.amount.setText("USD " + String.valueOf((int) (((Activity_Home) getActivity()).numf_of_guest * (int) (((Activity_Home) getActivity()).num_of_days * Double.parseDouble(f.getString("price"))))));
 
 
                          break;

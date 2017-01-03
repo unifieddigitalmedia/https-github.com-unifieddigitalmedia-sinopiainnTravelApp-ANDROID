@@ -2,6 +2,8 @@ package com.example.home.sinopiainntravelapp;
 
 
 import android.annotation.TargetApi;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
@@ -12,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import java.util.Date;
@@ -38,6 +41,22 @@ public class Fragment_Time extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment__time, container, false);
 
+        FrameLayout view = (FrameLayout) rootView.findViewById(R.id.framelayout);
+
+        view.setDrawingCacheEnabled(true);
+
+        view.buildDrawingCache();
+
+        Bitmap bm = view.getDrawingCache();
+
+        //bm.createScaledBitmap(bm, view.getMeasuredWidth(), view.getMeasuredHeight(),true);
+
+        View backgroundView = (View) rootView.findViewById(R.id.bgtime);
+
+        BitmapDrawable ob = new BitmapDrawable(getResources(), bm);
+
+        backgroundView.setBackground(ob);
+
         time = (TextView) rootView.findViewById(R.id.time);
 
         //TimeZone timezone = TimeZone.getDefault();
@@ -58,13 +77,11 @@ public class Fragment_Time extends Fragment {
 
         String localTime = date.format(currentLocalTime);
 
-        time.setText("Local Tme Is\n" + localTime);
-
 
         TimeZone timeZone = TimeZone.getTimeZone("America/Jamaica");
         calendar = Calendar.getInstance(timeZone);
         SimpleDateFormat simpleDateFormat =
-                new SimpleDateFormat("EE MMM dd HH:mm:ss zzz yyyy", Locale.UK);
+                new SimpleDateFormat("EE MMM dd HH:mm", Locale.UK);
         simpleDateFormat.setTimeZone(timeZone);
 
         System.out.println("Time zone: " + timeZone.getID());
@@ -73,6 +90,9 @@ public class Fragment_Time extends Fragment {
 
         System.out.println("UTC:     " + simpleDateFormat.format(calendar.getTime()));
         System.out.println("Default: " + calendar.getTime());
+
+        time.setText("Local Date And Time Is\n" + simpleDateFormat.format(calendar.getTime()) );
+
 
         return rootView;
     }

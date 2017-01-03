@@ -208,7 +208,7 @@ public class Fragment_Contact_Page extends Fragment implements OnMapReadyCallbac
             if (convertView == null) {
 
 
-                convertView = mInflater.inflate(R.layout.billheaderitem, null);
+                convertView = mInflater.inflate(R.layout.contactbillheaderitem, null);
 
 
             }

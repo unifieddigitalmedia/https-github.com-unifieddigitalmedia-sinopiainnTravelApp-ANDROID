@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.loopj.android.http.AsyncHttpClient;
@@ -54,6 +55,10 @@ public class Fragment_New_Comment extends Fragment {
 
     CardView blistlayout;
 
+    ImageView mainImage;
+
+    ScaleBitMaps bitmapClass ;
+
     private Integer[] icons = {
 
             R.drawable.ic_star_outline_24dp, R.drawable.ic_star_24dp,  };
@@ -79,6 +84,14 @@ public class Fragment_New_Comment extends Fragment {
         collapsingToolbar.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar);
 
         collapsingToolbar.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
+
+
+        mainImage = (ImageView) rootView.findViewById(R.id.image);
+
+        bitmapClass = new ScaleBitMaps(getActivity());
+
+        mainImage.setImageBitmap(bitmapClass.decodeSampledBitmapFromResource(getResources(),R.drawable.blue_mountains, 100, 100));
+
 
         rating = 0;
 
@@ -207,6 +220,8 @@ public class Fragment_New_Comment extends Fragment {
         fromDateError = (TextInputLayout) rootView.findViewById(R.id.fromDateError);
 
         nameTextView = (TextView) rootView.findViewById(R.id.name);
+
+        nameTextView.setText(((Activity_CheckIn) getActivity()).name);
 
         dateTextView = (TextView) rootView.findViewById(R.id.date);
 

@@ -76,6 +76,9 @@ String name;
 
                     WEB_SERVICE_URL = builder.append("http://www.sinopiainn.com/api/timeline?name=").append(URLEncoder.encode(name, "utf-8")).toString();
 
+
+                    Log.i("WEB_SERVICE_URL",WEB_SERVICE_URL);
+
                 } catch (UnsupportedEncodingException e) {
 
                     e.printStackTrace();
@@ -163,7 +166,7 @@ bitmapArray.get(0);*/
 
                             StringBuilder builder = new StringBuilder();
 
-                            String WEB_SERVICE_URL = builder.append("http://www.sinopiainn.com/").append(reservation_image.get("image_url")).toString();
+                            String WEB_SERVICE_URL = reservation_image.get("image_url").toString();
 
                            guestbitmapArray.add(WEB_SERVICE_URL);
 

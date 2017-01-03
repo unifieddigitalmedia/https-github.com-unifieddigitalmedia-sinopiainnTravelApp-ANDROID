@@ -8,11 +8,13 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.TransitionInflater;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -55,6 +57,7 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.NameValuePair;
 import cz.msebera.android.httpclient.message.BasicNameValuePair;
+import layout.Fragment_Error_Logging;
 
 public class Activity_Home extends AppCompatActivity {
 
@@ -132,6 +135,7 @@ public class Activity_Home extends AppCompatActivity {
 
     static public int placePos ;
 
+    BottomSheetDialogFragment bottomSheetDialogFragment;
 
     RelativeLayout relativeLayout;
 
@@ -204,8 +208,9 @@ public class Activity_Home extends AppCompatActivity {
 
         overlay.setVisibility(View.GONE);
 
-
         relativeLayout = (RelativeLayout) findViewById(R.id.relativeLay);
+
+        bottomSheetDialogFragment = new Fragment_Error_Logging();
 
         FrameLayout mViewPager = (FrameLayout) findViewById(R.id.container);
 
@@ -380,6 +385,8 @@ public class Activity_Home extends AppCompatActivity {
 
                         bundle.putInt("Activity", 0);
 
+                        bundle.putInt("Menu",2);
+
                         bundle.putString("Json", json.toString());
 
                         new_fragment.setArguments(bundle);
@@ -405,48 +412,22 @@ public class Activity_Home extends AppCompatActivity {
 
             case 3:
 
+                Fragment_Location_List new_fragment = new  Fragment_Location_List();
 
-                String WEB_SERVICE_URL = "http://www.sinopiainn.com/api/businesses";
+                Bundle bundle1 = new Bundle();
 
-                client = new AsyncHttpClient();
+String jsonString = "[{\"name\":\"Portland\",\"description\":\"Even though it is a quiet and beautiful haven, Portland isn’t only visited for its charm. If you’ve got an eye for arts and crafts, and all the jewels Jamaica has to offer.\",\"image_url\":\"portland\",\"location\":\"portland\"},{\"name\":\"Ocho Rios\",\"description\":\"From exquisite luxury plazas, filled with world-class brands, to traditional stalls and stores, where one can uncover all kinds of charming mementos.\",\"image_url\":\"ocho_rios\",\"location\":\"ocho rios\"},{\"name\":\"Kingston\",\"description\":\"Kingston is one-of-a-kind. A busy cosmopolitan, half exotic jungle, bursting with sunshine, and half thriving business. With plenty to see and do.\",\"image_url\":\"ocho_rios\",\"location\":\"kingston\"},{\"name\":\"Montego Bay & Negril\",\"description\":\"Montego Bay & Negril's  white, sandy beaches, can offer you a perfectly long, lazy day, soaking up the sun  under deep blue skies.\",\"image_url\":\"negril\",\"location\":\"montego bay\"}]";
 
-                client.setConnectTimeout(20000);
+                bundle1.putString("List",jsonString);
 
-                client.get(WEB_SERVICE_URL, new JsonHttpResponseHandler() {
+                bundle1.putInt("Activity", 0);
 
-                    @Override
-                    public void onStart() {
-                        // called before request is started
-                    }
+                bundle1.putInt("Menu",3);
 
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
+                new_fragment.setArguments(bundle1);
 
 
-                         JsonBusinesses = json;
-
-                        Fragment_Travel_Planner travel = new Fragment_Travel_Planner();
-
-                        bundle.putInt("Activity", 0);
-
-                        bundle.putString("Json", json.toString());
-
-                        travel.setArguments(bundle);
-
-                        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, travel ).addToBackStack(null).commit();
-
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e)  {
-
-
-                    }
-                    @Override
-                    public void onRetry(int retryNo) {
-
-                    }
-                });
+                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container,new_fragment).addToBackStack(null).commit();
 
 
                 break;
@@ -639,6 +620,7 @@ public class Activity_Home extends AppCompatActivity {
 
         client.setConnectTimeout(20000);
 
+        Log.i("params", String.valueOf(params));
 
         client.get("http://www.sinopiainn.com/api/mobile/checkhotelavailability/", params , new JsonHttpResponseHandler() {
 
@@ -711,6 +693,18 @@ public class Activity_Home extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+
+                Bundle bundle1 = new Bundle();
+
+                bundle1.putString("error1","there was an error on our server.");
+
+                bundle1.putString("error2","");
+
+                bottomSheetDialogFragment.setArguments(bundle1);
+
+                bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+
 
 
             }
@@ -810,7 +804,7 @@ public class Activity_Home extends AppCompatActivity {
                 if (itinerary.length() != 0) {
 
 
-                    WEB_SERVICE_URL = builder.append("subtotaladmission=").append(String.format("%.2f", subtotaladmission())).append("&subtotalavergae=").append(String.format("%.2f", subtotalavergae())).append("&carhire=").append(String.format("%.2f", carhire())).append("&triptax=").append(String.format("%.2f", tax())).append("&triptotal=").append(String.format("%.2f", triptotal())).append("&tripID=").append("1").toString();
+                   // WEB_SERVICE_URL = builder.append("subtotaladmission=").append(String.format("%.2f", subtotaladmission())).append("&subtotalavergae=").append(String.format("%.2f", subtotalavergae())).append("&carhire=").append(String.format("%.2f", carhire())).append("&triptax=").append(String.format("%.2f", tax())).append("&triptotal=").append(String.format("%.2f", triptotal())).append("&tripID=").append("1").toString();
 
 
                     try {
@@ -847,7 +841,7 @@ public class Activity_Home extends AppCompatActivity {
                 WEB_SERVICE_URL = builder.append("&payment_method_nonce=").append(paymentMethodNonce.getNonce()).append("&amount=").append(String.format("%.2f", despoitTotal)).toString();
 
 
-
+Log.i("WEB_SERVICE_URL",WEB_SERVICE_URL);
 
                     client.post(WEB_SERVICE_URL, params, new JsonHttpResponseHandler() {
 
@@ -862,6 +856,7 @@ public class Activity_Home extends AppCompatActivity {
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
 
+                            Log.i("RESERVATION", String.valueOf(json));
 
                             progressView.stopAnimation();
 
@@ -876,16 +871,19 @@ public class Activity_Home extends AppCompatActivity {
 
                                         JSONObject resObj = json.getJSONObject("Reservation");
 
-                                        JSONArray res = resObj.getJSONArray("ops");
 
-                                        resObj = res.getJSONObject(0);
-
-
-                                        editor.putString("fname", resObj.getString("fname"));
-                                        editor.putString("lname", resObj.getString("lname"));
-                                        editor.putString("fromdate", resObj.getString("fromdate"));
-                                        editor.putString("todate", resObj.getString("todate"));
+                                        editor = settings.edit();
+                                        editor.putString("fname",resObj.getString("fname"));
+                                        editor.putString("lname",resObj.getString("lname"));
+                                        editor.putString("fromdate",resObj.getString("fromdate"));
+                                        editor.putString("todate",resObj.getString("todate"));
                                         editor.putString("reservationID",resObj.getString("_id"));
+
+                                        editor.commit();
+
+                                        Intent intent = new Intent(getBaseContext(), Activity_CheckIn.class);
+                                        startActivity(intent);
+
 
 
                                     } catch (JSONException e) {
@@ -895,10 +893,7 @@ public class Activity_Home extends AppCompatActivity {
                                     }
 
 
-                                    editor.commit();
 
-                                    Intent intent = new Intent(getBaseContext(), Activity_CheckIn.class);
-                                    startActivity(intent);
 
 
                                 } else {
@@ -908,7 +903,7 @@ public class Activity_Home extends AppCompatActivity {
                                     editor.putString("lname", "");
                                     editor.putString("fromdate", "");
                                     editor.putString("todate", "");
-
+                                    editor.putString("reservationID", "");
 
 
                                     Snackbar snackbar = Snackbar
@@ -930,14 +925,27 @@ public class Activity_Home extends AppCompatActivity {
                         @Override
                         public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e) {
 
+                            Log.i("RESERVATION","failed");
+
                             progressView.stopAnimation();
 
                             overlay.setVisibility(View.GONE);
 
-                            Snackbar snackbar = Snackbar
+
+                            Bundle bundle1 = new Bundle();
+
+                            bundle1.putString("error1","Processing your payment");
+
+                            bundle1.putString("error2","");
+
+                            bottomSheetDialogFragment.setArguments(bundle1);
+
+                            bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+
+                            /*Snackbar snackbar = Snackbar
                                     .make(relativeLayout, "Processing your payment", Snackbar.LENGTH_LONG);
 
-                            snackbar.show();
+                            snackbar.show();*/
 
                         }
 
@@ -951,6 +959,22 @@ public class Activity_Home extends AppCompatActivity {
 
 
                 }
+
+
+
+        }else{
+
+
+
+            Bundle bundle1 = new Bundle();
+
+            bundle1.putString("error1","there was an errorwith your payment.");
+
+            bundle1.putString("error2","");
+
+            bottomSheetDialogFragment.setArguments(bundle1);
+
+            bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
 
 
 
@@ -980,6 +1004,139 @@ public class Activity_Home extends AppCompatActivity {
 
 
     }
+
+    public void tripPlanner(final String location) {
+
+        final JSONArray businessLocation = null;
+
+        String WEB_SERVICE_URL = "http://www.sinopiainn.com/api/businesses";
+
+        client = new AsyncHttpClient();
+
+        client.setConnectTimeout(20000);
+
+        client.get(WEB_SERVICE_URL, new JsonHttpResponseHandler() {
+
+            @Override
+            public void onStart() {
+                // called before request is started
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
+
+                new MyAsyncTask(json,location).execute();
+
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e)  {
+
+
+                Bundle bundle1 = new Bundle();
+
+                bundle1.putString("error1","there was an error on our server.");
+
+                bundle1.putString("error2","Please try again.");
+
+                bottomSheetDialogFragment.setArguments(bundle1);
+
+                bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+
+
+            }
+            @Override
+            public void onRetry(int retryNo) {
+
+            }
+        });
+
+
+    }
+
+
+    private class MyAsyncTask extends AsyncTask<Object, Object, JSONArray>
+
+    {
+
+
+        JSONArray businesses = null;
+
+        String businesslocation = null;
+
+        JSONArray businessLocation  = new JSONArray();
+
+
+        public MyAsyncTask(JSONArray json, String location) {
+
+             businesses = json;
+
+             businesslocation = location;
+
+
+        }
+
+
+        @Override
+        protected JSONArray doInBackground(Object... params) {
+
+
+            try {
+
+
+
+                for(int i = 0 ; i <  businesses.length(); i++ ) {
+
+
+                    final JSONObject businessObject  = (JSONObject)  businesses.get(i) ;
+
+
+                    if(businessObject.getString("location").equals(businesslocation) ){
+
+
+                        businessLocation.put(businessObject);
+
+
+
+                    }
+
+
+
+                }
+
+                /// JsonBusinesses = json;
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+
+            return businessLocation;
+        }
+        @Override
+        protected void onPostExecute(JSONArray result) {
+
+
+            Fragment_Travel_Planner travel = new Fragment_Travel_Planner();
+
+            bundle.putInt("Activity", 0);
+
+            JsonBusinesses = result;
+
+            bundle.putString("Json", result.toString());
+
+            travel.setArguments(bundle);
+
+            getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fade_in, R.anim.fade_out,R.anim.fade_in, R.anim.fade_out).replace(R.id.container, travel ).addToBackStack(null).commit();
+
+
+
+        }
+    }
+
+
 
 
     private class DownloadFilesTask extends AsyncTask<String, Void, String> {

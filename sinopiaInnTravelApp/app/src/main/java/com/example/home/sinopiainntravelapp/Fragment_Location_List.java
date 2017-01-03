@@ -1,11 +1,8 @@
 package com.example.home.sinopiainntravelapp;
 
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Build;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,15 +20,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Fragment_Food_Category_List extends Fragment {
+public class Fragment_Location_List extends Fragment {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -47,7 +40,7 @@ public class Fragment_Food_Category_List extends Fragment {
             "Mackrel Run Down","Coffee" };
 
 
-    public Fragment_Food_Category_List() {
+    public Fragment_Location_List() {
         // Required empty public constructor
     }
 
@@ -109,7 +102,7 @@ public class Fragment_Food_Category_List extends Fragment {
 
             public ImageView right ,logo;
 
-            RelativeLayout overlay;
+            RelativeLayout overlay, layout;
 
             CircularProgressView progressView;
 
@@ -124,6 +117,8 @@ public class Fragment_Food_Category_List extends Fragment {
                 progressView = (CircularProgressView) itemView.findViewById(R.id.progress_view);
 
                 overlay = (RelativeLayout) itemView.findViewById(R.id.overlay);
+
+                layout = (RelativeLayout) itemView.findViewById(R.id.placeholder);
 
                 overlay.setVisibility(View.VISIBLE);
 
@@ -181,44 +176,44 @@ public class Fragment_Food_Category_List extends Fragment {
 
                 }else{
 
-                try {
+                    try {
 
-                    ImageView staticImage = (ImageView) v.findViewById(R.id.image);
-
-
-                   // Fragment_Book_Description new_fragment = new Fragment_Book_Description();
-
-                    Bundle bundle1 = new Bundle();
-
-                    bundle1.putInt("Activity",bundle.getInt("Activity"));
-
-                    //bundle1.putString("Meta", String.valueOf((JSONObject) new JSONArray(String.valueOf(foodDataset.get(getLayoutPosition()))).get(0)));
-
-                    bundle1.putString("Meta", String.valueOf((JSONObject) foodDataset.get(getLayoutPosition())));
-
-                    bundle1.putInt("Menu", bundle.getInt("Menu"));
-
-                    new_fragment.setArguments(bundle1);
-
-                    if(bundle.getInt("Activity") == 0) {
+                        ImageView staticImage = (ImageView) v.findViewById(R.id.image);
 
 
-                        ((Activity_Home)getActivity()).homePageFadeTransition(new_fragment,"");
+                        // Fragment_Book_Description new_fragment = new Fragment_Book_Description();
+
+                        Bundle bundle1 = new Bundle();
+
+                        bundle1.putInt("Activity",bundle.getInt("Activity"));
+
+                        //bundle1.putString("Meta", String.valueOf((JSONObject) new JSONArray(String.valueOf(foodDataset.get(getLayoutPosition()))).get(0)));
+
+                        bundle1.putString("Meta", String.valueOf((JSONObject) foodDataset.get(getLayoutPosition())));
+
+                        bundle1.putInt("Menu", bundle.getInt("Menu"));
+
+                        new_fragment.setArguments(bundle1);
+
+                        if(bundle.getInt("Activity") == 0) {
 
 
-                    }else {
+                            ((Activity_Home)getActivity()).homePageFadeTransition(new_fragment,"");
 
-                        ((Activity_CheckIn)getActivity()).homePageFadeTransition(new_fragment,"");
+
+                        }else {
+
+                            ((Activity_CheckIn)getActivity()).homePageFadeTransition(new_fragment,"");
+
+                        }
+
+
+
+                    } catch (JSONException e) {
+
+                        e.printStackTrace();
 
                     }
-
-
-
-                } catch (JSONException e) {
-
-                    e.printStackTrace();
-
-                }
 
 
 
@@ -258,66 +253,47 @@ public class Fragment_Food_Category_List extends Fragment {
         public void onBindViewHolder(final ViewHolder holder, int position) {
 
 
-              //  JSONObject f = (JSONObject) new JSONArray(String.valueOf(foodDataset.get(position))).get(0);
+            //  JSONObject f = (JSONObject) new JSONArray(String.valueOf(foodDataset.get(position))).get(0);
 
 
 
             try {
 
+
                 final JSONObject f = (JSONObject) foodDataset.get(position);
+
                 holder.mTextView.setText(f.getString("name"));
+
                 holder.descriptionTextView.setText(f.getString("description"));
 
-            Log.i("image_url",f.getString("image_url").replaceAll(" ", "%20"));
+                Log.i("image_url",f.getString("image_url").replaceAll(" ", "%20"));
 
+                int resID = 0;
 
-            new Thread() {
-                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-                public void run() {
+                resID = getResources().getIdentifier(f.getString("image_url") , "drawable", getActivity().getPackageName());
 
+                BitmapDrawable ob = new BitmapDrawable(getResources(),  bitmapClass.decodeSampledBitmapFromResource(getResources(),resID, 100, 100));
 
-                    try {
-                        try ( InputStream is = new URL(f.getString("image_url").replaceAll(" ", "%20")).openStream() ) {
+                holder.layout.setBackgroundDrawable(ob);
 
-                            final Bitmap bitmap = BitmapFactory.decodeStream( is );
-                            //  holder.logo.setImageBitmap(BitmapFactory.decodeFile(bitmaps.get(0)));
+                //holder.logo.setImageDrawable(getResources().getDrawable(resID));
 
-                            getActivity().runOnUiThread(new Runnable() {
+                //holder.logo.setImageBitmap(bitmapClass.decodeSampledBitmapFromResource(getResources(),resID, 100, 100));
 
-                                @Override
-                                public void run() {
+                holder.overlay.setVisibility(View.GONE);
 
-                                    holder.logo.setImageBitmap(bitmap);
-
-                                    holder.overlay.setVisibility(View.GONE);
-
-                                    holder.progressView.stopAnimation();
-
-                                }
-                            });
-
-
-
-                    } catch (IOException e) {e.printStackTrace();
-
-                    }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-
-                }
-            }.start();
+                holder.progressView.stopAnimation();
 
             } catch (JSONException e) {
+
                 e.printStackTrace();
+
             }
 
 
-
             //URL url = new URL(f.getString("image_url"));
-                //Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                //holder.logo.setImageBitmap(bmp);
+            //Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+            //holder.logo.setImageBitmap(bmp);
 
 
 

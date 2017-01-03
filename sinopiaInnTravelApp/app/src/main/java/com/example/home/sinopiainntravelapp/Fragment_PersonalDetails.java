@@ -129,6 +129,7 @@ public class Fragment_PersonalDetails extends Fragment {
         mediaScanIntent.setData(contentUri);
 
         getActivity().sendBroadcast(mediaScanIntent);
+
     }
 
     private void setPic() {

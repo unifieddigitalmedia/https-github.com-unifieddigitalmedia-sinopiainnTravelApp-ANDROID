@@ -103,6 +103,9 @@ public class Fragment_Travel_Planner extends Fragment {
                                                             ((Activity_Home) getActivity()).homePageFadeTransition(new_fragment,"");
 
 
+                                                        }else{
+
+                                                            travelerrormessage.setText("Select a type of service");
                                                         }
 
 
@@ -124,6 +127,9 @@ public class Fragment_Travel_Planner extends Fragment {
                                                             ((Activity_CheckIn) getActivity()).homePageFadeTransition(new_fragment,"");
 
 
+                                                        }else{
+
+                                                            travelerrormessage.setText("Select a type of service");
                                                         }
 
                                                     }
@@ -359,7 +365,12 @@ public class Fragment_Travel_Planner extends Fragment {
 
         ImageView image = (ImageView) rootView.findViewById(R.id.image);
 
-        image.setImageBitmap(bitmapClass.decodeSampledBitmapFromResource(getResources(), images[3], 100, 100));
+        bitmapClass = new ScaleBitMaps(getActivity());
+
+        image.setImageBitmap(bitmapClass.decodeSampledBitmapFromResource(getResources(),R.drawable.jamaica_map_800, 100, 100));
+
+
+        //image.setImageBitmap(bitmapClass.decodeSampledBitmapFromResource(getResources(), images[3], 100, 100));
 
 
 

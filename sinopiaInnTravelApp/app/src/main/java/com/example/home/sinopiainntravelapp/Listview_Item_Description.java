@@ -1,17 +1,22 @@
 package com.example.home.sinopiainntravelapp;
 
 
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +40,9 @@ import cz.msebera.android.httpclient.Header;
 
 public class Listview_Item_Description extends Fragment {
 
+    private BottomSheetBehavior mBottomSheetBehavior;
     ExpandableListView route1;
+    ExpandableListView route2;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -48,9 +55,9 @@ public class Listview_Item_Description extends Fragment {
     JSONObject obj ;
 
 
-    ArrayList<String> listDataHeader;
+    static ArrayList<String> listDataHeader;
 
-    ArrayList<JSONArray>  listDataChild;
+    static ArrayList<JSONArray>  listDataChild;
 
     JSONArray childitems;
 
@@ -89,20 +96,40 @@ public class Listview_Item_Description extends Fragment {
             obj = new JSONObject(String.valueOf(getArguments().get("Meta")));
 
 
-
         } catch (JSONException e) {
 
             e.printStackTrace();
 
         }
 
-
-
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+
+                Log.i("MENU ITEM food", String.valueOf(getArguments().getInt("Menu")));
+
+                if(getArguments().getInt("Menu") == 3 || getArguments().getInt("Menu") == 2) {
+
+                    BottomSheetDialogFragment bottomSheetDialogFragment = new TutsPlusBottomSheetDialogFragment();
+
+                    Bundle bundle3 = new Bundle();
+
+                    bundle3.putString("Meta",getArguments().getString("Meta"));
+
+
+
+                    bottomSheetDialogFragment.setArguments(bundle3);
+
+                    bottomSheetDialogFragment.show(getActivity().getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+
+                    Log.i("MENU ITEM food","");
+
+
+                }else{
+
 
                 AsyncHttpClient client = new AsyncHttpClient();
 
@@ -117,7 +144,7 @@ public class Listview_Item_Description extends Fragment {
                         public void onSuccess(int statusCode, Header[] headers, File response) {
 
 
-                            if(getArguments().getInt("Activity") == 0) {
+                            if(getArguments().getInt("Activity") == 1) {
 
 
                                 Intent target = new Intent(Intent.ACTION_VIEW);
@@ -157,27 +184,25 @@ public class Listview_Item_Description extends Fragment {
                         }
 
                     });
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-
+                }
             }
         });
 
 
         listDataHeader = new ArrayList<String>();
+
         listDataChild = new ArrayList<JSONArray>();
 
 
         listDataHeader.add(0,"");
 
 
-        listDataHeader.add(1,"Ingredients");
-
-
-        listDataHeader.add(2,"Method");
-
+        listDataHeader.add(1,"");
 
 
         try {
@@ -186,7 +211,7 @@ public class Listview_Item_Description extends Fragment {
 
             JSONObject item = new JSONObject();
 
-            item.put("name",obj.get("description"));
+            item.put("name",obj.get("name"));
 
             childitems.put(item);
 
@@ -194,16 +219,9 @@ public class Listview_Item_Description extends Fragment {
 
             childitems = new JSONArray();
 
-            childitems.put(item);
+            childitems.put(obj.get("description"));
 
-            listDataChild.add(1, obj.getJSONArray("ingridients"));
-
-            listDataChild.add(2, obj.getJSONArray("method"));
-
-
-
-
-
+            listDataChild.add(1, childitems);
 
         } catch (JSONException e) {
 
@@ -233,13 +251,16 @@ public class Listview_Item_Description extends Fragment {
         route1.expandGroup(1);
 
 
+
+
+
+
         return rootView;
 
 
     }
 
-    public class ExpandableListAdapter extends BaseExpandableListAdapter {
-
+    public static class ExpandableListAdapter extends BaseExpandableListAdapter {
 
         private LayoutInflater mInflater;
 
@@ -402,6 +423,134 @@ public class Listview_Item_Description extends Fragment {
         TextView name ;
 
 
+
+    }
+
+
+    static public class TutsPlusBottomSheetDialogFragment extends BottomSheetDialogFragment {
+
+
+        ExpandableListView route2;
+
+        ArrayList<String> listDataHeader;
+
+        ArrayList<JSONArray>  listDataChild;
+
+        JSONArray childitems;
+
+        JSONObject obj ;
+
+        private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
+
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+
+                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+
+                    dismiss();
+                }
+
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+
+        };
+
+        @Override
+        public void setupDialog(Dialog dialog, int style) {
+
+            super.setupDialog(dialog, style);
+
+            View contentView = View.inflate(getContext(), R.layout.fragment_bottom_sheet, null);
+
+            route2 = (ExpandableListView) contentView.findViewById(R.id.route2);
+
+            listDataHeader = new ArrayList<String>();
+
+            listDataChild = new ArrayList<JSONArray>();
+
+
+            listDataHeader.add(0,"");
+
+
+            listDataHeader.add(1,"Ingredients");
+
+
+            listDataHeader.add(2,"Method");
+
+            try {
+
+                obj = new JSONObject(String.valueOf(getArguments().get("Meta")));
+
+                Log.i("obj:-", String.valueOf(obj));
+
+            } catch (JSONException e) {
+
+                e.printStackTrace();
+
+            }
+
+            try {
+
+                childitems = new JSONArray();
+
+                JSONObject item = new JSONObject();
+
+                item.put("name",obj.get("description"));
+
+                childitems.put(item);
+
+                listDataChild.add(0,childitems);
+
+                childitems = new JSONArray();
+
+                childitems.put(item);
+
+                listDataChild.add(1, obj.getJSONArray("ingridients"));
+
+                listDataChild.add(2, obj.getJSONArray("method"));
+
+            } catch (JSONException e) {
+
+
+                e.printStackTrace();
+
+
+            }
+
+
+            ExpandableListAdapter listAdapter = new ExpandableListAdapter(getActivity(), listDataHeader, listDataChild);
+
+            route2.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+                @Override
+                public boolean onGroupClick(ExpandableListView parent, View v,
+                                            int groupPosition, long id) {
+                    return true;
+                }
+            });
+
+            route2.setAdapter(listAdapter);
+
+            route2.expandGroup(0);
+            route2.expandGroup(1);
+
+
+            dialog.setContentView(contentView);
+
+            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) ((View) contentView.getParent()).getLayoutParams();
+
+            CoordinatorLayout.Behavior behavior = params.getBehavior();
+
+            if( behavior != null && behavior instanceof BottomSheetBehavior ) {
+
+                ((BottomSheetBehavior) behavior).setBottomSheetCallback(mBottomSheetBehaviorCallback);
+
+            }
+
+        }
 
     }
 
