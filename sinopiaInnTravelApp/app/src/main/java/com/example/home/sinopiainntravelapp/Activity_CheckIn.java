@@ -894,46 +894,15 @@ Bitmap bitmap;
                         break;
                     case 4:
 
-                        Fragment_Food_Category_List travel = new Fragment_Food_Category_List();
+
+                        Fragment_Location_List travel = new Fragment_Location_List();
 
                         Bundle bundle1 = new Bundle();
 
-                        String jsonString = "[\n" +
-                                "\n" +
-                                "{\n" +
-                                "    \n" +
-                                "\"name\":\"test\",\n" +
-                                "\"description\":\"test\",\n" +
-                                "\"image_url\":\"\",\n" +
-                                "\"location\":\"portland\",\n" +
-                                "\n" +
-                                "},{\n" +
-                                "    \n" +
-                                "\"name\":\"test\",\n" +
-                                "\"description\":\"test\",\n" +
-                                "\"image_url\":\"\",\n" +
-                                "\"location\":\"portland\",\n" +
-                                "\n" +
-                                "},{\n" +
-                                "    \n" +
-                                "\"name\":\"test\",\n" +
-                                "\"description\":\"test\",\n" +
-                                "\"image_url\":\"\",\n" +
-                                "\"location\":\"portland\",\n" +
-                                "\n" +
-                                "},{\n" +
-                                "    \n" +
-                                "\"name\":\"test\",\n" +
-                                "\"description\":\"test\",\n" +
-                                "\"image_url\":\"\",\n" +
-                                "\"location\":\"portland\",\n" +
-                                "\n" +
-                                "},\n" +
-                                "\n" +
-                                "\n" +
-                                "]";
-                        bundle1.putString("List",jsonString);
+                        String jsonString = "[{\"name\":\"Portland\",\"description\":\"Even though it is a quiet and beautiful haven, Portland isn’t only visited for its charm. If you’ve got an eye for arts and crafts, and all the jewels Jamaica has to offer.\",\"image_url\":\"portland\",\"location\":\"portland\"},{\"name\":\"Ocho Rios\",\"description\":\"From exquisite luxury plazas, filled with world-class brands, to traditional stalls and stores, where one can uncover all kinds of charming mementos.\",\"image_url\":\"ocho_rios\",\"location\":\"ocho rios\"},{\"name\":\"Kingston\",\"description\":\"Kingston is one-of-a-kind. A busy cosmopolitan, half exotic jungle, bursting with sunshine, and half thriving business. With plenty to see and do.\",\"image_url\":\"ocho_rios\",\"location\":\"kingston\"},{\"name\":\"Montego Bay & Negril\",\"description\":\"Montego Bay & Negril's  white, sandy beaches, can offer you a perfectly long, lazy day, soaking up the sun  under deep blue skies.\",\"image_url\":\"negril\",\"location\":\"montego bay\"}]";
 
+
+                        bundle1.putString("List",jsonString);
                         bundle1.putInt("Activity", 1);
 
                         bundle1.putInt("Menu",4);
