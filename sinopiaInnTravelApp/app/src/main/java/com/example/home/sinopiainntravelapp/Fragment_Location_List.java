@@ -141,8 +141,6 @@ public class Fragment_Location_List extends Fragment {
 
                 Listview_Item_Description new_fragment = new Listview_Item_Description();
 
-                if(getArguments().getInt("Menu") == 3 && bundle.getInt("Activity") == 0 ) {
-
                     Bundle bundle1 = new Bundle();
 
                     bundle1.putInt("Activity",bundle.getInt("Activity"));
@@ -157,73 +155,29 @@ public class Fragment_Location_List extends Fragment {
 
                         new_fragment.setArguments(bundle1);
 
+                        final JSONObject locationObject  = (JSONObject) foodDataset.get(getLayoutPosition());
+
                         if(bundle.getInt("Activity") == 0 && getArguments().getInt("Menu") == 3 ) {
 
-                            final JSONObject locationObject  = (JSONObject) foodDataset.get(getLayoutPosition());
+
 
                             ((Activity_Home)getActivity()).tripPlanner(locationObject.getString("location"));
 
-                        }else if(bundle.getInt("Activity") == 1 && getArguments().getInt("Menu") == 3 ){
+                        }else if(bundle.getInt("Activity") == 1 && getArguments().getInt("Menu") == 4 ){
 
-                            ((Activity_CheckIn)getActivity()).homePageFadeTransition(new_fragment,"");
+                            ((Activity_CheckIn)getActivity()).tripPlanner(locationObject.getString("location"));
 
                         }
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-
-                }else{
-
-                    try {
-
-                        ImageView staticImage = (ImageView) v.findViewById(R.id.image);
-
-
-                        // Fragment_Book_Description new_fragment = new Fragment_Book_Description();
-
-                        Bundle bundle1 = new Bundle();
-
-                        bundle1.putInt("Activity",bundle.getInt("Activity"));
-
-                        //bundle1.putString("Meta", String.valueOf((JSONObject) new JSONArray(String.valueOf(foodDataset.get(getLayoutPosition()))).get(0)));
-
-                        bundle1.putString("Meta", String.valueOf((JSONObject) foodDataset.get(getLayoutPosition())));
-
-                        bundle1.putInt("Menu", bundle.getInt("Menu"));
-
-                        new_fragment.setArguments(bundle1);
-
-                        if(bundle.getInt("Activity") == 0) {
-
-
-                            ((Activity_Home)getActivity()).homePageFadeTransition(new_fragment,"");
-
-
-                        }else {
-
-                            ((Activity_CheckIn)getActivity()).homePageFadeTransition(new_fragment,"");
-
-                        }
-
-
-
-                    } catch (JSONException e) {
-
-                        e.printStackTrace();
-
-                    }
-
-
-
 
 
                 }
 
 
 
-            }
 
         }
 

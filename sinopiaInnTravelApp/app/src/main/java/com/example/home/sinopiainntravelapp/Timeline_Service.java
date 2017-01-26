@@ -26,7 +26,7 @@ import cz.msebera.android.httpclient.Header;
 
 public class Timeline_Service extends IntentService {
 
-String name;
+String email;
     ArrayList<Bitmap> bitmapArray ;
     ArrayList<String> guestbitmapArray;
     ArrayList<String> guestStringArray;
@@ -50,7 +50,7 @@ String name;
     protected void onHandleIntent(Intent workIntent) {
 
 
-        name = workIntent.getStringExtra("name");
+        email = workIntent.getStringExtra("email");
 
         bitmapArray =  new  ArrayList<>();
 
@@ -74,7 +74,7 @@ String name;
 
                 try {
 
-                    WEB_SERVICE_URL = builder.append("http://www.sinopiainn.com/api/timeline?name=").append(URLEncoder.encode(name, "utf-8")).toString();
+                    WEB_SERVICE_URL = builder.append("http://www.sinopiainn.com/api/timeline?name=").append(URLEncoder.encode(email, "utf-8")).toString();
 
 
                     Log.i("WEB_SERVICE_URL",WEB_SERVICE_URL);
@@ -145,53 +145,69 @@ bitmapArray.get(0);*/
 
                 try {
 
-                    for(int x = 0; x < timelinefiles.length(); x++) {
+                    if(timelinefiles != null){
 
-                        JSONObject reservation = (JSONObject) timelinefiles.get(x);
+                        for(int x = 0; x < timelinefiles.length(); x++) {
 
-                        //JSONArray PHOTOS = reservation.getJSONArray("images");
+                            JSONObject reservation = (JSONObject) timelinefiles.get(x);
 
-                        JSONArray PHOTOS = reservation.getJSONArray("images");
+                            //JSONArray PHOTOS = reservation.getJSONArray("images");
 
-
-                       guestbitmapArray = new ArrayList<>();
-
-                        for(int l = 0; l < PHOTOS.length(); l++) {
+                            JSONArray PHOTOS = reservation.getJSONArray("images");
 
 
+                            guestbitmapArray = new ArrayList<>();
 
-                            JSONObject reservation_image = (JSONObject) PHOTOS.get(l);
+                            for(int l = 0; l < PHOTOS.length(); l++) {
 
-                            client.setConnectTimeout(20000);
 
-                            StringBuilder builder = new StringBuilder();
 
-                            String WEB_SERVICE_URL = reservation_image.get("image_url").toString();
+                                JSONObject reservation_image = (JSONObject) PHOTOS.get(l);
 
-                           guestbitmapArray.add(WEB_SERVICE_URL);
+                                client.setConnectTimeout(20000);
 
-                           guestStringArray.add((String) reservation_image.get("text"));
+                                StringBuilder builder = new StringBuilder();
+
+                                String WEB_SERVICE_URL = reservation_image.get("image_url").toString();
+
+                                guestbitmapArray.add(WEB_SERVICE_URL);
+
+                                guestStringArray.add((String) reservation_image.get("text"));
+
+
+
+                            }
+
+
+                            reservation.put("BITMAPS",guestbitmapArray.toString());
+                            reservation.put("DESCRIPTIONS",guestStringArray.toString());
+                            reservationsContainer.add(reservation.toString());
 
 
 
                         }
 
 
-                        reservation.put("BITMAPS",guestbitmapArray.toString());
-                        reservation.put("DESCRIPTIONS",guestStringArray.toString());
-                        reservationsContainer.add(reservation.toString());
 
+                        Intent checkinIntent = new Intent(getBaseContext(), Activity_CheckIn.class);
+                        checkinIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        checkinIntent.putExtra("chat",false);
+                        checkinIntent.putStringArrayListExtra("timeline",reservationsContainer);
+                        getApplication().startActivity(checkinIntent);
+
+                    }
+else{
+
+
+
+                        Intent checkinIntent = new Intent(getBaseContext(), Activity_CheckIn.class);
+                        checkinIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        checkinIntent.putExtra("chat",false);
+                        checkinIntent.putStringArrayListExtra("timeline",reservationsContainer);
+                        getApplication().startActivity(checkinIntent);
 
 
                     }
-
-
-
-                    Intent checkinIntent = new Intent(getBaseContext(), Activity_CheckIn.class);
-                    checkinIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    checkinIntent.putExtra("chat",false);
-                    checkinIntent.putStringArrayListExtra("timeline",reservationsContainer);
-                    getApplication().startActivity(checkinIntent);
 
 
                 } catch (JSONException e) {

@@ -39,7 +39,7 @@ public class Activity_Main extends AppCompatActivity {
     SharedPreferences settings;
     public static String token ;
     static Activity_Main mainActivity;
-    static String guestName;
+    static String guestName,guestEmail;
     NetworkInfo activeNetworkInfo;
     private BottomSheetBehavior mBottomSheetBehavior;
 
@@ -64,6 +64,8 @@ public class Activity_Main extends AppCompatActivity {
         checkInButton = (Button) findViewById(R.id.gotocheckin);
 
         settings = getSharedPreferences(PREFS_NAME, 0);
+
+        Log.i("WEB_SERVICE_URL",settings.getString("token", ""));
 
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -123,9 +125,11 @@ if(activeNetworkInfo != null && activeNetworkInfo.isConnected()){
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
 
-                            String guestName = null;
+                            String guestEmail = null;
 
                             Boolean guest = false;
+
+
 
                             for (int l = 0; l < json.length(); l++) {
 
@@ -152,7 +156,7 @@ if(activeNetworkInfo != null && activeNetworkInfo.isConnected()){
 
                                         fullname.append(booking.getString("lname"));
 
-                                        guestName = fullname.toString();
+                                        guestEmail = booking.getString("email");
 
 
 
@@ -172,7 +176,7 @@ if(activeNetworkInfo != null && activeNetworkInfo.isConnected()){
                             if (guest) {
 
 
-                                verifyGuest(guestName);
+                                verifyGuest(guestEmail);
 
 
                             } else {
@@ -221,8 +225,11 @@ if(activeNetworkInfo != null && activeNetworkInfo.isConnected()){
                 if(activeNetworkInfo != null && activeNetworkInfo.isConnected()){
 
 
+                    settings.edit().clear().apply();
 
-                    settings.edit().putString("token", "");
+                   // settings.edit().putString("token"," ");
+
+                    Log.i("AFTER_CONTINUE", settings.getString("token","") );
 
                     Intent intent = new Intent(getBaseContext(), Activity_Home.class);
 
@@ -265,10 +272,10 @@ if(activeNetworkInfo != null && activeNetworkInfo.isConnected()){
         editor.putString("c",guestName);
 
         editor.commit();
-
+        Log.i("WEB_SERVICE_URL",guestName);
         Intent mServiceIntent = new Intent(this,Timeline_Service.class);
 
-        mServiceIntent.putExtra("name",guestName);
+        mServiceIntent.putExtra("email",guestName);
 
         startService(mServiceIntent);
 

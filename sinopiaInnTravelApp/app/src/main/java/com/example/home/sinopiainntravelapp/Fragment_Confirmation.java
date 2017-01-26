@@ -11,6 +11,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,7 +55,7 @@ public class Fragment_Confirmation extends Fragment {
     JSONArray files;
 
     public String[] menu = {
-            "Our Villa", "Local Time", "Local Weather", "Menu","Concierge","Bookshelf","Guest Book","Channels"
+            "Our Villa", "Local Time", "Local Weather - (* this feature of our app will be launching soon)", "Menu","Concierge","Bookshelf","Guest Book","Channels - (* this feature of our app will be launching soon)"
 
 
     };
@@ -94,9 +95,12 @@ public class Fragment_Confirmation extends Fragment {
 
         String[] dateArray =  ((Activity_CheckIn) getActivity()).fromdate.split("-");
 
+        String D = String.valueOf(Integer.parseInt(dateArray[2]) - 1900);
 
 
-        Date date = new Date( Integer.parseInt(dateArray[2]) - 1900, Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[0]));
+
+
+        Date date = new Date( Integer.parseInt(dateArray[2]) - 1900, Integer.parseInt(dateArray[1] ) - 1, Integer.parseInt(dateArray[0]));
 
         String ndate = formatter.format(date);
 
@@ -113,7 +117,7 @@ public class Fragment_Confirmation extends Fragment {
 
         dateArray = ((Activity_CheckIn) getActivity()).todate.split("-");
 
-        date = new Date( Integer.parseInt(dateArray[2]) - 1900, Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[0]));
+        date = new Date( Integer.parseInt(dateArray[2]) - 1900, Integer.parseInt(dateArray[1])-1, Integer.parseInt(dateArray[0]));
 
         formatter = new SimpleDateFormat("EEE MMM dd yyyy");
 
@@ -359,11 +363,11 @@ public class Fragment_Confirmation extends Fragment {
                     case 2:
 
 
-                        Fragment_Time weather_fragment = new Fragment_Time();
+                        /*Fragment_Time weather_fragment = new Fragment_Time();
 
 
                         ((Activity_CheckIn) getActivity()).homePageFadeTransition(weather_fragment,"");
-
+*/
 
                         break;
                     case 3:
@@ -412,12 +416,12 @@ public class Fragment_Confirmation extends Fragment {
                     case 7:
 
 
-                        WEB_SERVICE_URL = "http://www.sinopiainn.com/api/tv";
+                       /* WEB_SERVICE_URL = "http://www.sinopiainn.com/api/tv";
 
 
                         ((Activity_CheckIn) getActivity()).selectMenuItem(position,WEB_SERVICE_URL);
 
-
+*/
 
                         break;
 

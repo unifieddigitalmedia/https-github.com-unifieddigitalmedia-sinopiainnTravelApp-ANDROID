@@ -367,7 +367,7 @@ public class Fragment_Travel_Planner extends Fragment {
 
         bitmapClass = new ScaleBitMaps(getActivity());
 
-        image.setImageBitmap(bitmapClass.decodeSampledBitmapFromResource(getResources(),R.drawable.jamaica_map_800, 100, 100));
+        image.setImageBitmap(bitmapClass.decodeSampledBitmapFromResource(getResources(),R.drawable.blue_mountains, 100, 100));
 
 
         //image.setImageBitmap(bitmapClass.decodeSampledBitmapFromResource(getResources(), images[3], 100, 100));

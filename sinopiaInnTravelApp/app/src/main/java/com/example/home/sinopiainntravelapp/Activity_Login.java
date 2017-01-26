@@ -93,6 +93,7 @@ public class Activity_Login extends AppCompatActivity {
                                     editor.putString("token",token.getText().toString());
                                     editor.putString("fname",booking.getString("fname"));
                                     editor.putString("lname",booking.getString("lname"));
+                                    editor.putString("email",booking.getString("email"));
                                     editor.putString("fromdate",booking.getString("fromdate"));
                                     editor.putString("todate",booking.getString("todate"));
                                     editor.putString("reservationID",booking.getString("_id"));
