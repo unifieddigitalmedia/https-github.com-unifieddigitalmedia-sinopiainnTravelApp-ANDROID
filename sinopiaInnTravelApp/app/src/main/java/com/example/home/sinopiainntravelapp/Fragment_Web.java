@@ -228,13 +228,16 @@ public class Fragment_Web extends Fragment {
         @Override
         protected  ArrayList<String> doInBackground(String... strings) {
 
-              String response = null;
+            String response = null;
+
             ArrayList<String> stringArray = null;
 
 
                 try {
+
                     URL url = new URL(urlString);
-                   /* HttpsURLConnection httpsURLConnection = (HttpsURLConnection) url.openConnection();
+
+                    /* HttpsURLConnection httpsURLConnection = (HttpsURLConnection) url.openConnection();
                     httpsURLConnection.setRequestMethod("GET");
                     httpsURLConnection.setDoInput(true);
                     httpsURLConnection.setDoOutput(true);*/
@@ -244,9 +247,6 @@ public class Fragment_Web extends Fragment {
                     response = streamToString(inputStream);
 
                     JSONObject jsonObject = (JSONObject) new JSONTokener(response).nextValue();
-
-
-
 
                     stringArray = new ArrayList<String>();
 
@@ -268,6 +268,7 @@ public class Fragment_Web extends Fragment {
                             e.printStackTrace();
                         }
                     }
+
                     Log.i("mainImageJsonObject",jsonArray.toString());
 
 
