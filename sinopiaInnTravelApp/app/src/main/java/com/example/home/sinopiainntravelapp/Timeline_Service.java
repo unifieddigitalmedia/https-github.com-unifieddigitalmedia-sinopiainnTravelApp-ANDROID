@@ -74,7 +74,7 @@ String email;
 
                 try {
 
-                    WEB_SERVICE_URL = builder.append("http://www.sinopiainn.com/api/timeline?name=").append(URLEncoder.encode(email, "utf-8")).toString();
+                    WEB_SERVICE_URL = builder.append("http://www.sinopiainn.com/api/timeline?email=").append(URLEncoder.encode(email, "utf-8")).toString();
 
 
                     Log.i("WEB_SERVICE_URL",WEB_SERVICE_URL);
@@ -99,6 +99,8 @@ String email;
 
 
                        timelinefiles = json;
+
+                        Log.e("timelinefiles", json.toString());
 
 
                     }

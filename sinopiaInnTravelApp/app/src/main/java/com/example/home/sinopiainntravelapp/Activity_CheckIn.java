@@ -135,7 +135,7 @@ File media;
     String name;
     String fname;
     String lname;
-
+    String email;
     String registrationToken;
 Random random;
 Bitmap bitmap;
@@ -165,7 +165,7 @@ Bitmap bitmap;
 
         name = builder.append(settings.getString("fname","")).append(" ").append(settings.getString("lname","")).toString();
 
-        Log.i("name",name);
+        email = settings.getString("email","");
 
         fname= settings.getString("fname","");
 
@@ -455,6 +455,7 @@ Bitmap bitmap;
 
     private void goToTimeline() {
 
+Log.i("timeline size", String.valueOf(reservationsContainer.size()));
 
         if(reservationsContainer.size() == 0){
 
@@ -463,9 +464,9 @@ Bitmap bitmap;
 
             //overlay.setVisibility(View.VISIBLE);
 
-     Snackbar snackbar = Snackbar.make(relativeLayout, "You havent taken any pictures", Snackbar.LENGTH_LONG);
+     //Snackbar snackbar = Snackbar.make(relativeLayout, "You havent taken any pictures", Snackbar.LENGTH_LONG);
 
-                            snackbar.show();
+                            //snackbar.show();
 
 
         } else {
@@ -476,6 +477,8 @@ Bitmap bitmap;
             Bundle bundle = new Bundle ();
 
             bundle.putStringArrayList("photo_files", reservationsContainer);
+
+            bundle.putInt("Menu", 14);
 
             new_fragment.setArguments(bundle);
 
@@ -1474,28 +1477,15 @@ try {
             Uri uri = Uri.fromFile(media);
 
 
-            //shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
 
-
-            //startActivity(Intent.createChooser(share, "Share to"));
             try {
                 if(json.get("ERROR").toString().equals(""))
                 {
 
-                    try {
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
 
-                        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(MediaStore.Images.Media
-                                .insertImage(getContentResolver(), media.getAbsolutePath(), "test", "test")));
 
-                    } catch (FileNotFoundException e) {
-
-                        e.printStackTrace();
-
-                    }
-
-                    shareIntent.setType("image/jpeg");
-
-                    startActivity(Intent.createChooser(shareIntent,"Share to"));
+                    startActivity(Intent.createChooser(shareIntent, "Share to"));
 
                 }else{
 

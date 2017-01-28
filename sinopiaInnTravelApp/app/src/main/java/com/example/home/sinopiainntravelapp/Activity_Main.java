@@ -265,6 +265,10 @@ if(activeNetworkInfo != null && activeNetworkInfo.isConnected()){
     @NonNull
     public void verifyGuest(String guestName) {
 
+
+        Log.i("VERIFIYING GUEST","VERIFIYING GUEST");
+
+
         SharedPreferences settings = getSharedPreferences(PREFS_NAME_1, 0);
 
         SharedPreferences.Editor editor = settings.edit();
@@ -272,7 +276,9 @@ if(activeNetworkInfo != null && activeNetworkInfo.isConnected()){
         editor.putString("c",guestName);
 
         editor.commit();
+
         Log.i("WEB_SERVICE_URL",guestName);
+
         Intent mServiceIntent = new Intent(this,Timeline_Service.class);
 
         mServiceIntent.putExtra("email",guestName);

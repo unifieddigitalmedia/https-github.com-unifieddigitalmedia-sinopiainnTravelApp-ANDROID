@@ -85,8 +85,6 @@ public class Fragment_Timeline extends Fragment {
             bitmaps = new ArrayList<String>(Arrays.asList(room.getString("BITMAPS").substring(1, room.getString("BITMAPS").length()-1).split(","))) ;
 
 
-
-
             new Thread() {
                 @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                 public void run() {
@@ -112,6 +110,8 @@ public class Fragment_Timeline extends Fragment {
 
 
                         }
+
+
                     } catch (IOException e) {e.printStackTrace();
 
                     }
@@ -227,7 +227,9 @@ public class Fragment_Timeline extends Fragment {
                     images = new ArrayList<String>(Arrays.asList(room.getString("DESCRIPTIONS").substring(1, room.getString("DESCRIPTIONS").length()-1).split(","))) ;
 
 
-                    Fragment_Photos_Pager new_fragment = new Fragment_Photos_Pager();
+                    //Fragment_Photos_Pager new_fragment = new Fragment_Photos_Pager();
+
+                    Fragment_Photos new_fragment = new Fragment_Photos();
 
                     Bundle bundle1 = new Bundle();
 

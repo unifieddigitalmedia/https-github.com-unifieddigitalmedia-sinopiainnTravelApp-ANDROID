@@ -99,10 +99,18 @@ public class Activity_Login extends AppCompatActivity {
                                     editor.putString("reservationID",booking.getString("_id"));
                                     editor.commit();
 
-                                    Intent intent = new Intent(getBaseContext(), Activity_CheckIn.class);
+                                    /*Intent intent = new Intent(getBaseContext(), Activity_CheckIn.class);
                                     startActivity(intent);
 
-                                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);*/
+
+                                    Intent mServiceIntent = new Intent(getBaseContext(),Timeline_Service.class);
+
+                                    mServiceIntent.putExtra("email",booking.getString("email"));
+
+                                    startService(mServiceIntent);
+
+
 
                                     break;
 

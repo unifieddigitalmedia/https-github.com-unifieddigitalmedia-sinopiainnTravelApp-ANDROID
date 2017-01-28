@@ -7,4 +7,10 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    <string name="Client_ID">22050d93815945ac9f575e3fcf38962d</string>
+
+    <string name="Client_Secret">2e06fb946c1b4a67957eb990cd59cc81</string>
+
 </resources>
