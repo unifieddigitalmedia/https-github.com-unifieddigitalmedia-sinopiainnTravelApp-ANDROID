@@ -144,6 +144,7 @@ Bitmap bitmap;
     java.util.concurrent.ExecutorService executor ;
     JSONArray files ;
     ArrayList<Bitmap> bitmapArray ;
+    int timelineposition;
     public static Activity_CheckIn getInstance(){
         return   checkinActivity;
     }

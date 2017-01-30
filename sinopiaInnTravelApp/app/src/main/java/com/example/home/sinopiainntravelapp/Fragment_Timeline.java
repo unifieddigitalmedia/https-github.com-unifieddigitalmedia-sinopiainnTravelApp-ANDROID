@@ -12,6 +12,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -236,6 +237,9 @@ public class Fragment_Timeline extends Fragment {
                     bundle1.putStringArrayList("Image Item",bitmaps);
 
                     bundle1.putStringArrayList("Image Description",images);
+
+
+                    ((Activity_CheckIn) getActivity()).timelineposition = getLayoutPosition();
 
                     bundle1.putBoolean("fromGridview",false);
 

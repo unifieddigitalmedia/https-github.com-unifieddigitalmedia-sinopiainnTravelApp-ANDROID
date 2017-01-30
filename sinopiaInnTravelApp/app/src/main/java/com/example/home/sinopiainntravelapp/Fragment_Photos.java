@@ -8,6 +8,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -48,6 +50,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.SyncHttpClient;
@@ -76,6 +79,8 @@ import java.util.regex.Pattern;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.extras.Base64;
+
+import static android.R.attr.width;
 
 
 public class Fragment_Photos extends Fragment {
@@ -107,6 +112,14 @@ public class Fragment_Photos extends Fragment {
     public static String CALLBACKURL = "http://www.sinopiainn.com";
 
     public static String authURLString = null;
+
+    AsyncHttpClient client = new SyncHttpClient();
+
+    public static Boolean photoGrid = false;
+
+    RequestParams params , params1 ;
+
+
 
 
     String request_token;
@@ -150,7 +163,13 @@ public class Fragment_Photos extends Fragment {
         fileNames = new ArrayList<>();
         //ArrayList<ImageItem> data = getData();
 
+        client = new AsyncHttpClient();
 
+        client.setConnectTimeout(10000000);
+
+        params = new RequestParams();
+
+        params1 = new RequestParams();
 
         new DownloadFilesTask().execute();
 
@@ -162,35 +181,35 @@ public class Fragment_Photos extends Fragment {
                 if(getArguments().getInt("Menu") == 24 ) {
 
 
-                    if (imageItemsPos.contains(position)) {
-
-
-                        imageItemsPos.remove(imageItemsPos.indexOf(position));
-
-                        //imageData.remove(imageItemsPos.indexOf(position));
-
-
-                    } else {
-
-                        imageItemsPos.add(position);
+                    if(photoGrid){
 
 
 
-                        /*ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-                        ImageItem item = (ImageItem) imageItems.get(position);
+                        final ImageItem item = (ImageItem) parent.getItemAtPosition(position);
 
-                        item.getImage().compress(Bitmap.CompressFormat.JPEG, 100, baos);
 
-                        byte[] imageBytes = baos.toByteArray();
-
-                        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-
-                        imageData.add(encodedImage);*/
+                        showImageDialog(item, position);
 
 
                     }
+                    else {
 
+
+                        if (imageItemsPos.contains(position)) {
+
+
+                            imageItemsPos.remove(imageItemsPos.indexOf(position));
+
+
+                        } else {
+
+                            imageItemsPos.add(position);
+
+                        }
+
+
+                    }
 
 
                 } else {
@@ -198,58 +217,7 @@ public class Fragment_Photos extends Fragment {
 
                     final ImageItem item = (ImageItem) parent.getItemAtPosition(position);
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
-                    builder.setPositiveButton("", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-                    }).setNegativeButton("", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-
-                    });
-
-                    final AlertDialog dialog = builder.create();
-
-                    //LayoutInflater inflater = getLayoutInflater();
-
-                    LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-
-                    View dialogLayout = inflater.inflate(R.layout.go_pro_dialog_layout, null);
-
-                    dialog.setView(dialogLayout);
-
-                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-                    dialog.show();
-
-                    Log.i("item.getImage()", String.valueOf(item.getImage()));
-
-                    dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                        @Override
-                        public void onShow(DialogInterface d) {
-
-                            ImageView image = (ImageView) dialog.findViewById(R.id.goProDialogImage);
-
-                            Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(),
-                                    R.drawable.logo);
-
-                            image.setImageBitmap(item.getImage());
-
-
-                            float imageWidthInPX = (float)image.getWidth();
-
-                            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(Math.round(imageWidthInPX),
-                                    Math.round(imageWidthInPX * (float)icon.getHeight() / (float)icon.getWidth()));
-                            image.setLayoutParams(layoutParams);
-
-
-                        }
-                    });
+                    showImageDialog(item, position);
 
 
                 }
@@ -266,6 +234,65 @@ public class Fragment_Photos extends Fragment {
 
     }
 
+    public void showImageDialog (final ImageItem item, int position){
+
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setPositiveButton("", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        }).setNegativeButton("", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+
+        });
+
+        final AlertDialog dialog = builder.create();
+
+        //LayoutInflater inflater = getLayoutInflater();
+
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+
+        View dialogLayout = inflater.inflate(R.layout.go_pro_dialog_layout, null);
+
+        dialog.setView(dialogLayout);
+
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        dialog.show();
+
+        Log.i("item.getImage()", String.valueOf(item.getImage()));
+
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface d) {
+
+                ImageView image = (ImageView) dialog.findViewById(R.id.goProDialogImage);
+
+                Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(),
+                        R.drawable.logo);
+
+                image.setImageBitmap(item.getImage());
+
+
+                float imageWidthInPX = (float)image.getWidth();
+
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(Math.round(imageWidthInPX),
+                        Math.round(imageWidthInPX * (float)icon.getHeight() / (float)icon.getWidth()));
+                image.setLayoutParams(layoutParams);
+
+
+            }
+        });
+
+
+    }
     private ArrayList<ImageItem> getData() throws JSONException, IOException {
 
 
@@ -373,6 +400,7 @@ public class Fragment_Photos extends Fragment {
 
                 holder.image = (ImageView) row.findViewById(R.id.image);
 
+
                 row.setTag(holder);
 
             } else {
@@ -381,7 +409,7 @@ public class Fragment_Photos extends Fragment {
 
             ImageItem item = (ImageItem) data.get(position);
 
-            holder.image.setImageBitmap(item.getImage());
+            drawBorder(holder.image).setImageBitmap(item.getImage());
 
 
             return row;
@@ -393,6 +421,28 @@ public class Fragment_Photos extends Fragment {
         }
     }
 
+
+    public ImageView drawBorder( ImageView imageView){
+
+
+        GradientDrawable border = new GradientDrawable();
+
+        border.setColor(Color.parseColor("#bdbdbd")); //white background
+
+        border.setStroke(1, 0xFF000000); //black border with full opacity
+
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+
+            imageView.setBackgroundDrawable(border);
+
+        } else {
+
+            imageView.setBackground(border);
+
+        }
+        return imageView;
+
+    }
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.sharemenu, menu);
@@ -436,13 +486,6 @@ public class Fragment_Photos extends Fragment {
 
                         s3client.setEndpoint("s3-us-west-2.amazonaws.com");
 
-                        AsyncHttpClient client = new SyncHttpClient();
-
-                        client.setConnectTimeout(10000000);
-
-
-                        RequestParams params = new RequestParams();
-
 
 
                         //https://s3-us-west-2.amazonaws.com/sinopiainn.reservations/Boe+Doe/588b603e83846d5846d6cc2b.jpg
@@ -485,9 +528,8 @@ public class Fragment_Photos extends Fragment {
                                 }
 
 
-                                String name = ((Activity_CheckIn) getActivity()).name.replaceFirst("\\s++$", "");
 
-                                String keyName =   name+"/"+fileNames.get(g);
+                                String keyName =   ((Activity_CheckIn) getActivity()).name.replaceFirst("\\s++$", "")+"/"+fileNames.get(g);
 
 
                                 System.out.println(keyName);
@@ -503,56 +545,22 @@ public class Fragment_Photos extends Fragment {
                                         keyName,
                                         imageFile
                                 );
-                                //s3client.putObject(new PutObjectRequest("sinopiainn.reservations", keyName, imageFile));
-
-                                StringBuilder builder = new StringBuilder();
-
-                                String WEB_SERVICE_URL = null;
 
 
-                                try {
-                                    WEB_SERVICE_URL = builder.append("http://www.sinopiainn.com/api/upload-bulk-reservation-photo?resID=").append(((Activity_CheckIn) getActivity()).settings.getString("reservationID", "")).append("&name=").append(URLEncoder.encode(name, "utf-8")).append("&message=").toString();
-                                } catch (UnsupportedEncodingException e) {
-                                    e.printStackTrace();
-                                }
-
-                                Log.i("WEB_SERVICE_URL",WEB_SERVICE_URL);
-
-                                    client.post(WEB_SERVICE_URL, params, new JsonHttpResponseHandler() {
-
-                                        @Override
-                                        public void onStart() {
-
-
-                                        }
-
-                                        @Override
-                                        public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
-
-                                            new refreshGridViewTask().execute();
-
-                                        }
-
-                                        @Override
-                                        public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject e) {
-
-
-
-
-                                        }
-
-                                        @Override
-                                        public void onRetry(int retryNo) {
-
-
-                                        }
-
-                                    });
 
 
 
 
                             }
+
+                            getActivity().runOnUiThread(new Runnable() {
+
+                                @Override
+                                public void run() {
+
+                                    savefileNames();
+                                }
+                            });
 
 
                         } catch (AmazonServiceException ase) {
@@ -601,7 +609,51 @@ public class Fragment_Photos extends Fragment {
         }
     }
 
+    public void savefileNames()
 
+    {
+
+
+        StringBuilder builder = new StringBuilder();
+
+        String WEB_SERVICE_URL = null;
+
+        params.put("resID", ((Activity_CheckIn) getActivity()).settings.getString("reservationID", ""));
+
+        params.put("name",((Activity_CheckIn) getActivity()).name.replaceFirst("\\s++$", ""));
+
+        params.put("message","");
+
+        Log.i("WEB_SERVICE_URL", String.valueOf(params));
+
+        try {
+            WEB_SERVICE_URL = builder.append("http://www.sinopiainn.com/api/upload-bulk-reservation-photo?").append((URLEncoder.encode(String.valueOf(params), "utf-8"))).toString();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+
+        Log.i("WEB_SERVICE_URL",WEB_SERVICE_URL);
+
+
+        client.post(WEB_SERVICE_URL, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                new refreshGridViewTask().execute();
+                Log.i("onSuccess",String.valueOf(response));
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String res, Throwable t) {
+                // called when response HTTP status is "4XX" (eg. 401, 403, 404)
+
+                Log.i("onFailure", res);
+            }
+        });
+
+
+    }
 
     private class DownloadFilesTask extends AsyncTask<String, Void,  ArrayList<ImageItem>> {
 
@@ -619,7 +671,7 @@ public class Fragment_Photos extends Fragment {
 
             if(getArguments().getInt("Menu") != 10 ) {
 
-
+                photoGrid = false;
 
                 for (int i = 0; i < bitmaps.size(); i++) {
 
@@ -656,6 +708,7 @@ public class Fragment_Photos extends Fragment {
 
             } else  if(getArguments().getInt("Menu") == 10 ) {
 
+                photoGrid = true;
 
                 for (int i = 0; i <  ((Activity_CheckIn) getActivity()).bitmapArray.size(); i++) {
 
@@ -726,7 +779,39 @@ public class Fragment_Photos extends Fragment {
 
                 JSONArray jsonArray = (JSONArray) new JSONTokener(response).nextValue();
 
+                Log.i("int", String.valueOf( ((Activity_CheckIn) getActivity()).timelineposition ));
+
+                   JSONObject timeLine = (JSONObject) jsonArray.get( ((Activity_CheckIn) getActivity()).timelineposition);
+
+                Log.i("timeLine", String.valueOf(jsonArray));
+                Log.i("timeLine", String.valueOf(timeLine));
+
+                    jsonArray = (JSONArray) timeLine.getJSONArray("images");
+
                 Log.i("jsonArray", String.valueOf(jsonArray));
+
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+
+                    timeLine = (JSONObject) jsonArray.get(i);
+
+
+                    try (InputStream is = new URL(timeLine.getString("image_url") ).openStream()) {
+
+                        final Bitmap bitmap = BitmapFactory.decodeStream(is);
+
+                        imageItems.add(new ImageItem(bitmap, ""));
+
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+
+                    }
+
+
+
+
+                }
 
 
             } catch (Exception e) {
@@ -741,7 +826,11 @@ public class Fragment_Photos extends Fragment {
 
         protected void onPostExecute(ArrayList<ImageItem> imageItems) {
 
+            photoGrid = true;
 
+            adapter = new GridViewAdapter(getActivity(), R.layout.grid_item_layout,imageItems );
+
+            gridview.setAdapter(adapter);
 
 
         }
