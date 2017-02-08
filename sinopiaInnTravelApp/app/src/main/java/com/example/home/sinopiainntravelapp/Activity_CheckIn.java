@@ -145,6 +145,8 @@ Bitmap bitmap;
     JSONArray files ;
     ArrayList<Bitmap> bitmapArray ;
     int timelineposition;
+
+    String timelineid;
     public static Activity_CheckIn getInstance(){
         return   checkinActivity;
     }

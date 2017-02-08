@@ -6,7 +6,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
 
-    android:background="@android:color/black"
+    android:background="@android:color/white"
     android:measureWithLargestChild="false"
     android:orientation="vertical"
     android:weightSum="2">
@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="16dp"
                 android:id="@+id/amenities"
-                android:textColor="@android:color/white"
+                android:textColor="@android:color/black"
                 android:hint="Please enter the check token you received in your email"
 
 

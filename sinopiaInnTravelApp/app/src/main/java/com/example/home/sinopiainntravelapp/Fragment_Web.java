@@ -261,7 +261,12 @@ public class Fragment_Web extends Fragment {
                             jsonObject = jsonArray.getJSONObject(i);
 
 
-                            stringArray.add(jsonObject.getJSONObject("images").getJSONObject("low_resolution").getString("url"));
+                            stringArray.add(jsonObject.getJSONObject("images").getJSONObject("standard_resolution").getString("url"));
+
+                            Log.i("INSTAGRAM RESPONSE", String.valueOf(jsonObject.getJSONObject("images")));
+
+
+
                         }
                         catch (JSONException e) {
 
@@ -269,10 +274,8 @@ public class Fragment_Web extends Fragment {
                         }
                     }
 
-                    Log.i("mainImageJsonObject",jsonArray.toString());
 
 
-                    Log.i("RESPONSE", response);
 
 
                 } catch (Exception e) {

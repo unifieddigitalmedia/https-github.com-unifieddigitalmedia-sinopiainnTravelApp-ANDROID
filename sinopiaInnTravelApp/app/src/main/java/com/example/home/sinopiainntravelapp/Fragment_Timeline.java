@@ -29,9 +29,10 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.util.Date;
 
 
 public class Fragment_Timeline extends Fragment {
@@ -47,7 +48,9 @@ public class Fragment_Timeline extends Fragment {
     ArrayList<String> roomlist;
     ArrayList<String> bitmaps = null;
     ArrayList<String> images = null;
-
+    ArrayList<String> checkInDates = null;
+    String[] dateArray;
+    SimpleDateFormat formatter;
 
     public Fragment_Timeline() {
 
@@ -75,6 +78,10 @@ public class Fragment_Timeline extends Fragment {
         bitmapClass = new ScaleBitMaps(getActivity());
 
         rooms = getArguments().getStringArrayList("photo_files"); //getString("photo_files"));
+
+        formatter = new SimpleDateFormat("EEE MMM dd yyyy");
+
+
 
 
         JSONObject room = null;
@@ -147,9 +154,9 @@ public class Fragment_Timeline extends Fragment {
 
 
 
-            mAdapter = new listAdapter(rooms);
+        mAdapter = new listAdapter(rooms);
 
-            mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(mAdapter);
 
 
 
@@ -238,14 +245,19 @@ public class Fragment_Timeline extends Fragment {
 
                     bundle1.putStringArrayList("Image Description",images);
 
+                    Log.i("TIMELINE",room.toString());
 
                     ((Activity_CheckIn) getActivity()).timelineposition = getLayoutPosition();
+
+                    ((Activity_CheckIn) getActivity()).timelineid = room.getString("id");
 
                     bundle1.putBoolean("fromGridview",false);
 
                     new_fragment.setArguments(bundle1);
 
                     ((Activity_CheckIn) getActivity()).homePageFadeTransition(new_fragment,"");
+
+
 
 
                 } catch (JSONException e) {
@@ -299,6 +311,7 @@ public class Fragment_Timeline extends Fragment {
 
                 bitmaps = new ArrayList<String>(Arrays.asList(room.getString("BITMAPS").substring(1, room.getString("BITMAPS").length()-1).split(","))) ;
 
+                checkInDates = new ArrayList<String>(Arrays.asList(room.getString("CHECKIN").substring(1, room.getString("CHECKIN").length()-1).split(","))) ;
 
                 new Thread() {
                     public void run() {
@@ -335,7 +348,12 @@ public class Fragment_Timeline extends Fragment {
                     }
                 }.start();
 
-                holder.place.setText(room.getString("name"));
+
+                dateArray =  checkInDates.get(position).split("-");
+
+                Date date = new Date( Integer.parseInt(dateArray[2]) - 1900, Integer.parseInt(dateArray[1] ) - 1, Integer.parseInt(dateArray[0]));
+
+                holder.place.setText(formatter.format(date));
 
                 holder.location.setText(room.getString("location"));
 

@@ -30,6 +30,7 @@ String email;
     ArrayList<Bitmap> bitmapArray ;
     ArrayList<String> guestbitmapArray;
     ArrayList<String> guestStringArray;
+    ArrayList<String> guestCheckInArray;
     JSONArray files ;
 
     JSONArray timelinefiles ;
@@ -57,8 +58,10 @@ String email;
         guestbitmapArray =  new  ArrayList<>();
 
         guestStringArray = new  ArrayList<>();
+
         reservationsContainer = new ArrayList<>();
 
+        guestCheckInArray = new ArrayList<>();
 
         Thread getGuestFiles = new Thread(new Runnable() {
 
@@ -157,6 +160,7 @@ bitmapArray.get(0);*/
 
                             JSONArray PHOTOS = reservation.getJSONArray("images");
 
+                            guestCheckInArray.add(reservation.getString("from"));
 
                             guestbitmapArray = new ArrayList<>();
 
@@ -183,6 +187,7 @@ bitmapArray.get(0);*/
 
                             reservation.put("BITMAPS",guestbitmapArray.toString());
                             reservation.put("DESCRIPTIONS",guestStringArray.toString());
+                            reservation.put("CHECKIN",guestCheckInArray.toString());
                             reservationsContainer.add(reservation.toString());
 
 

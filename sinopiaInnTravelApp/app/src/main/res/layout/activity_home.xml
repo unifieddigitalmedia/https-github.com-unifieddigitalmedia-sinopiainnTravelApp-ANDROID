@@ -36,8 +36,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bt_black"
-        android:alpha="0.9"
+        android:background="@color/bt_white"
+        android:alpha="0.5"
         android:visibility="gone"
        android:id="@+id/overlay"
 
@@ -67,7 +67,7 @@
             android:textColor="@color/colorSecondary"
             android:textSize="18dp"
            android:textAlignment="center"
-            android:text="...one second we are processing your payment"/>
+            android:text="...please bear with us for one more second"/>
 
 
     </RelativeLayout>
